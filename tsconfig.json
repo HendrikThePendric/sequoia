@@ -13,6 +13,7 @@
         "isolatedModules": true, // Ensures each file is treated as a separate module.
         "noEmit": true, // Prevents TypeScript from emitting output files.
         "jsx": "react-jsx", // Configures JSX support for React.
+        "forceConsistentCasingInFileNames": true,
 
         /* Linting */
         "strict": true, // Enables strict type checking.

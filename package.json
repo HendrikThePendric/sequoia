@@ -10,7 +10,7 @@
         "/dist"
     ],
     "scripts": {
-        "lint": "eslint . --ext .ts,.tsx --ignore-path .gitignore --fix",
+        "lint": "eslint . --ext .ts,.tsx --ignore-path .gitignore --fix && ls-lint",
         "format": "prettier --write --parser typescript '**/*.{ts,tsx}'",
         "build": "tsc && vite build",
         "test": "vitest run",
@@ -33,6 +33,7 @@
     "devDependencies": {
         "@commitlint/cli": "^18.4.4",
         "@commitlint/config-conventional": "^18.4.4",
+        "@ls-lint/ls-lint": "^2.2.2",
         "@storybook/addon-essentials": "^7.6.8",
         "@storybook/addon-interactions": "^7.6.8",
         "@storybook/addon-links": "^7.6.8",

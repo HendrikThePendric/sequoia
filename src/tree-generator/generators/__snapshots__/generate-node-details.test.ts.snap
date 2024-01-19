@@ -1,0 +1,121 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Node Details Generator > Name type = name 	 ID type = int 1`] = `
+{
+  "displayName": "A Mocked Name",
+  "id": "1",
+  "level": 1,
+  "parent": null,
+  "path": "/1",
+}
+`;
+
+exports[`Node Details Generator > Name type = name 	 ID type = int 2`] = `
+{
+  "displayName": "A Mocked Name",
+  "id": "2",
+  "level": 2,
+  "parent": "1",
+  "path": "/1/2",
+}
+`;
+
+exports[`Node Details Generator > Name type = name 	 ID type = uuid 1`] = `
+{
+  "displayName": "A Mocked Name",
+  "id": "mock-uuid-value",
+  "level": 1,
+  "parent": null,
+  "path": "/mock-uuid-value",
+}
+`;
+
+exports[`Node Details Generator > Name type = name 	 ID type = uuid 2`] = `
+{
+  "displayName": "A Mocked Name",
+  "id": "mock-uuid-value",
+  "level": 2,
+  "parent": "mock-uuid-value",
+  "path": "/mock-uuid-value/mock-uuid-value",
+}
+`;
+
+exports[`Node Details Generator > Name type = occurrence 	 ID type = int 1`] = `
+{
+  "displayName": "1",
+  "id": "1",
+  "level": 1,
+  "parent": null,
+  "path": "/1",
+}
+`;
+
+exports[`Node Details Generator > Name type = occurrence 	 ID type = int 2`] = `
+{
+  "displayName": "1-2",
+  "id": "2",
+  "level": 2,
+  "parent": "1",
+  "path": "/1/2",
+}
+`;
+
+exports[`Node Details Generator > Name type = occurrence 	 ID type = uuid 1`] = `
+{
+  "displayName": "1",
+  "id": "mock-uuid-value",
+  "level": 1,
+  "parent": null,
+  "path": "/mock-uuid-value",
+}
+`;
+
+exports[`Node Details Generator > Name type = occurrence 	 ID type = uuid 2`] = `
+{
+  "displayName": "1-2",
+  "id": "mock-uuid-value",
+  "level": 2,
+  "parent": "mock-uuid-value",
+  "path": "/mock-uuid-value/mock-uuid-value",
+}
+`;
+
+exports[`Node Details Generator > Name type = path 	 ID type = int 1`] = `
+{
+  "displayName": "/1",
+  "id": "1",
+  "level": 1,
+  "parent": null,
+  "path": "/1",
+}
+`;
+
+exports[`Node Details Generator > Name type = path 	 ID type = int 2`] = `
+{
+  "displayName": "/1/2",
+  "id": "2",
+  "level": 2,
+  "parent": "1",
+  "path": "/1/2",
+}
+`;
+
+exports[`Node Details Generator > Name type = path 	 ID type = uuid 1`] = `
+{
+  "displayName": "/mock-uuid-value",
+  "id": "mock-uuid-value",
+  "level": 1,
+  "parent": null,
+  "path": "/mock-uuid-value",
+}
+`;
+
+exports[`Node Details Generator > Name type = path 	 ID type = uuid 2`] = `
+{
+  "displayName": "/mock-uuid-value/mock-uuid-value",
+  "id": "mock-uuid-value",
+  "level": 2,
+  "parent": "mock-uuid-value",
+  "path": "/mock-uuid-value/mock-uuid-value",
+}
+`;

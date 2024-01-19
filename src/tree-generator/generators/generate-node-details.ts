@@ -1,14 +1,14 @@
 import {
-    uniqueNamesGenerator,
     Config,
     adjectives,
-    colors,
     animals,
+    colors,
+    uniqueNamesGenerator,
 } from 'unique-names-generator'
-import { TreeNode } from './generate-tree'
+import { v4 as createUuid } from 'uuid'
 import { DisplayNameType } from '../prompts/display-name-type-prompt'
 import { IdType } from '../prompts/id-type-prompt'
-import { v4 as createUuid } from 'uuid'
+import { TreeNode } from './generate-tree'
 
 export type NodeDetailsGeneratorGenerator = (
     index: number,

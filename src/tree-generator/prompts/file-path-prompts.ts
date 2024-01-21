@@ -1,4 +1,4 @@
-import { input, confirm } from '@inquirer/prompts'
+import { confirm, input } from '@inquirer/prompts'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -21,12 +21,12 @@ export async function filePathPrompts() {
             default: false,
         })
         if (shouldOverwrite) {
-            return filePath
+            return { filePath, dir }
         } else {
             console.clear()
             return await filePathPrompts()
         }
     } else {
-        return filePath
+        return { filePath, dir }
     }
 }

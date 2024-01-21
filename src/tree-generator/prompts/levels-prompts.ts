@@ -15,27 +15,24 @@ export async function levelsPrompts(): Promise<{
         'Number of levels in the tree:',
         '3'
     )
-    const detailsPerLevel = new Map<
-        number,
-        { childrenLength: number; percentageOfLeafNodes: number }
-    >()
+    const detailsPerLevel: DetailsPerLevel = new Map()
 
-    for (let level = 1; level <= numberOfLevels; level++) {
+    /* The last level, by definition, cannot have children,
+     * so we stop iterating one level before last */
+    for (let level = 1; level < numberOfLevels; level++) {
         const childrenLength = await positiveIntegerInput(
             `Average number of children per node at level ${level}:`,
             '50'
         )
 
         const percentageOfLeafNodes =
-            level === numberOfLevels
-                ? 100 // All nodes at last level are leaf nodes
-                : level === 1
-                  ? 0 // No leaf nodes at root level
-                  : await positiveIntegerInput(
-                        `Occurance of leaf nodes at level ${level} (in %):`,
-                        '20',
-                        99
-                    )
+            level === 1
+                ? 0 // No leaf nodes at root level
+                : await positiveIntegerInput(
+                      `Occurance of leaf nodes at level ${level} (in %):`,
+                      '20',
+                      99
+                  )
         detailsPerLevel.set(level, {
             childrenLength,
             percentageOfLeafNodes,

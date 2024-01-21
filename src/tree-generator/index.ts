@@ -1,27 +1,41 @@
+import fs from 'node:fs'
 import { generateTree } from './generators/generate-tree'
 import {
-    displayNameTypePrompt,
+    confirmTreeGeneratorParamsPrompt,
     filePathPrompts,
-    idTypePrompt,
-    levelsPrompts,
-    rootNodesPrompt,
+    showPromptHeader,
+    showSuccessMessage,
+    treeGeneratorParamsPrompts,
 } from './prompts'
-import { showPromptHeader } from './prompts/show-prompt-header'
 
 async function init() {
-    showPromptHeader()
-    const filePath = await filePathPrompts()
-    const numberOfRootNodes = await rootNodesPrompt()
-    const { numberOfLevels, detailsPerLevel } = await levelsPrompts()
-    const displayNameType = await displayNameTypePrompt()
-    const idType = await idTypePrompt()
-    const treeData = generateTree({
-        numberOfRootNodes,
-        numberOfLevels,
-        detailsPerLevel,
-        displayNameType,
-        idType,
-    })
-    console.log(filePath, treeData)
+    try {
+        showPromptHeader()
+        const { filePath, dir } = await filePathPrompts()
+        let confirmed, treeGeneratorParams
+
+        while (!confirmed || !treeGeneratorParams) {
+            treeGeneratorParams = await treeGeneratorParamsPrompts()
+            confirmed =
+                await confirmTreeGeneratorParamsPrompt(treeGeneratorParams)
+        }
+        const treeData = generateTree(treeGeneratorParams)
+
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true })
+        }
+        fs.writeFileSync(filePath, JSON.stringify(treeData, null, 4))
+        showSuccessMessage(Object.keys(treeData).length, filePath)
+    } catch (error) {
+        const userInitiatedExit = error
+            ?.toString()
+            .includes('User force closed the prompt with 0 null')
+        if (userInitiatedExit) {
+            process.exit(0)
+        } else {
+            throw error
+        }
+    }
 }
+
 init()

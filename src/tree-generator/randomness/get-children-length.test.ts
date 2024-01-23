@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getChildrenLength, MAX_DEVIATION } from './get-children-length'
+import { MAX_DEVIATION, getChildrenLength } from './get-children-length'
 
 describe('getChildrenLength', () => {
     const APPROXIMATE_LENGTH = 60
@@ -18,8 +18,6 @@ describe('getChildrenLength', () => {
         const deviationOnLength = APPROXIMATE_LENGTH * MAX_DEVIATION
         const min = APPROXIMATE_LENGTH - deviationOnLength
         const max = APPROXIMATE_LENGTH + deviationOnLength
-
-        console.log(min, max)
 
         expect(results.every((result) => result >= min)).toBe(true)
         expect(results.every((result) => result <= max)).toBe(true)

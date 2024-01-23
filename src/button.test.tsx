@@ -6,6 +6,6 @@ describe('Button component', () => {
     it('Button should render correctly', () => {
         render(<Button numb={3} label="test" />)
         const button = screen.getByRole('button')
-        expect(button).toBeInTheDocument()
+        expect(button).toBeVisible()
     })
 })

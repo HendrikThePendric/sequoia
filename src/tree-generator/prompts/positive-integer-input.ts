@@ -10,13 +10,8 @@ export async function positiveIntegerInput(
         default: defaultValue,
         validate: (str: string) => {
             const floatN = parseFloat(str)
-            const isPositiveInteger =
-                !isNaN(floatN) &&
-                isFinite(floatN) &&
-                floatN > 0 &&
-                floatN % 1 == 0
 
-            if (!isPositiveInteger) {
+            if (Number.isInteger(floatN && floatN >= 0)) {
                 return 'Value not a positive integer'
             } else if (floatN > max) {
                 return `Value exceeds ${max}`

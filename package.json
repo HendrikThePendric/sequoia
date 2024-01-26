@@ -14,7 +14,7 @@
         "format": "prettier --write --parser typescript '**/*.{ts,tsx}'",
         "build": "tsc && vite build",
         "test": "vitest run",
-        "test-watch": "vitest",
+        "test-watch": "vitest --passWithNoTests",
         "test:ui": "vitest --ui",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",

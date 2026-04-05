@@ -1,0 +1,15 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "tools": {
+        "github_*": true,
+        "grep_*": true,
+        "context7_*": true,
+        "neovim_*": true
+    },
+    "permission": {
+        "github_*": "allow",
+        "grep_*": "allow",
+        "context7_*": "allow",
+        "neovim_*": "allow"
+    }
+}

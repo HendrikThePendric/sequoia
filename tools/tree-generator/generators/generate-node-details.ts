@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import type { Config } from 'unique-names-generator'
 import {
     adjectives,
@@ -5,7 +6,6 @@ import {
     colors,
     uniqueNamesGenerator,
 } from 'unique-names-generator'
-import { v4 as createUuid } from 'uuid'
 import { DisplayNameType } from '../prompts/display-name-type-prompt'
 import { IdType } from '../prompts/id-type-prompt'
 import { TreeNode } from './generate-tree'
@@ -28,7 +28,7 @@ export const createNodeDetailsGenerator = (
     let integerId = 0
 
     return (index: number, parentNode?: TreeNode) => {
-        const id = idType === 'uuid' ? createUuid() : (++integerId).toString()
+        const id = idType === 'uuid' ? nanoid(6) : (++integerId).toString()
         const path = parentNode?.path ? `${parentNode.path}/${id}` : `/${id}`
         const displayName =
             displayNameType === 'name'

@@ -6,7 +6,7 @@ export async function filePathPrompts() {
     const projectRoot = process.env.PWD ?? ''
     const dir = await input({
         message: 'Destination folder:',
-        default: 'src/__fixtures__/tree-data',
+        default: 'tools/__fixtures__/tree-data',
     })
     const fileName = await input({
         message: 'File name (excl .json extension):',

@@ -23,20 +23,20 @@ exports[`Node Details Generator > Name type = name 	 ID type = int 2`] = `
 exports[`Node Details Generator > Name type = name 	 ID type = uuid 1`] = `
 {
   "displayName": "A Mocked Name",
-  "id": "mock-uuid-value",
+  "id": "mockId",
   "level": 1,
   "parent": null,
-  "path": "/mock-uuid-value",
+  "path": "/mockId",
 }
 `;
 
 exports[`Node Details Generator > Name type = name 	 ID type = uuid 2`] = `
 {
   "displayName": "A Mocked Name",
-  "id": "mock-uuid-value",
+  "id": "mockId",
   "level": 2,
-  "parent": "mock-uuid-value",
-  "path": "/mock-uuid-value/mock-uuid-value",
+  "parent": "mockId",
+  "path": "/mockId/mockId",
 }
 `;
 
@@ -63,20 +63,20 @@ exports[`Node Details Generator > Name type = occurrence 	 ID type = int 2`] = `
 exports[`Node Details Generator > Name type = occurrence 	 ID type = uuid 1`] = `
 {
   "displayName": "1",
-  "id": "mock-uuid-value",
+  "id": "mockId",
   "level": 1,
   "parent": null,
-  "path": "/mock-uuid-value",
+  "path": "/mockId",
 }
 `;
 
 exports[`Node Details Generator > Name type = occurrence 	 ID type = uuid 2`] = `
 {
   "displayName": "1-2",
-  "id": "mock-uuid-value",
+  "id": "mockId",
   "level": 2,
-  "parent": "mock-uuid-value",
-  "path": "/mock-uuid-value/mock-uuid-value",
+  "parent": "mockId",
+  "path": "/mockId/mockId",
 }
 `;
 
@@ -102,20 +102,20 @@ exports[`Node Details Generator > Name type = path 	 ID type = int 2`] = `
 
 exports[`Node Details Generator > Name type = path 	 ID type = uuid 1`] = `
 {
-  "displayName": "/mock-uuid-value",
-  "id": "mock-uuid-value",
+  "displayName": "/mockId",
+  "id": "mockId",
   "level": 1,
   "parent": null,
-  "path": "/mock-uuid-value",
+  "path": "/mockId",
 }
 `;
 
 exports[`Node Details Generator > Name type = path 	 ID type = uuid 2`] = `
 {
-  "displayName": "/mock-uuid-value/mock-uuid-value",
-  "id": "mock-uuid-value",
+  "displayName": "/mockId/mockId",
+  "id": "mockId",
   "level": 2,
-  "parent": "mock-uuid-value",
-  "path": "/mock-uuid-value/mock-uuid-value",
+  "parent": "mockId",
+  "path": "/mockId/mockId",
 }
 `;

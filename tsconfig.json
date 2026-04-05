@@ -23,6 +23,6 @@
         "noFallthroughCasesInSwitch": true, // Requires handling all cases in a switch statement.
         "declaration": true // Generates declaration files for TypeScript.
     },
-    "include": ["src", "setupTests.ts", ".storybook"], // Specifies the directory to include when searching for TypeScript files.
+    "include": ["src", "tools", "setupTests.ts", ".storybook"], // Specifies the directory to include when searching for TypeScript files.
     "exclude": ["src/**/__docs__", "src/**/__test__"]
 }

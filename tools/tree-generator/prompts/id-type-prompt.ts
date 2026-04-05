@@ -11,7 +11,7 @@ export async function idTypePrompt(): Promise<IdType> {
                 value: 'int',
             },
             {
-                name: 'UUID',
+                name: 'Short random (6 chars)',
                 value: 'uuid',
             },
         ],

@@ -19,7 +19,7 @@
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
         "prepare": "husky",
-        "generate-tree": "pnpm tsx src/tree-generator/index.ts"
+        "generate-tree": "pnpm tsx tools/tree-generator/index.ts"
     },
     "lint-staged": {
         "*.{ts,tsx}": [
@@ -55,6 +55,7 @@
         "husky": "^9.1.7",
         "jsdom": "^29.0.1",
         "lint-staged": "^16.4.0",
+        "nanoid": "^5.1.7",
         "prettier": "^3.8.1",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
@@ -63,7 +64,6 @@
         "typescript": "^6.0.2",
         "typescript-eslint": "^8.58.0",
         "unique-names-generator": "^4.7.1",
-        "uuid": "^13.0.0",
         "vite": "^6.0.3",
         "vite-plugin-dts": "^4.5.4",
         "vitest": "^4.1.2"

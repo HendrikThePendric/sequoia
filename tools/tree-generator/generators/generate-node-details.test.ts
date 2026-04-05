@@ -3,17 +3,12 @@ import { DisplayNameType } from '../prompts/display-name-type-prompt'
 import { IdType } from '../prompts/id-type-prompt'
 import { createNodeDetailsGenerator } from './generate-node-details'
 
-type UuidMock = { v4: () => string }
 type UniqueNamesGeneratorMock = { uniqueNamesGenerator: () => string }
 type TestCase = [DisplayNameType, IdType]
 
-vi.mock('uuid', async (importOriginal) => {
-    const original: UuidMock = await importOriginal()
-    return {
-        ...original,
-        v4: () => 'mock-uuid-value',
-    }
-})
+vi.mock('nanoid', () => ({
+    nanoid: () => 'mockId',
+}))
 
 vi.mock('unique-names-generator', async (importOriginal) => {
     const original: UniqueNamesGeneratorMock = await importOriginal()

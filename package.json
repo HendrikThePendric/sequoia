@@ -10,7 +10,7 @@
         "/dist"
     ],
     "scripts": {
-        "lint": "eslint . --ext .ts,.tsx --ignore-path .gitignore --fix && ls-lint",
+        "lint": "eslint . --fix && ls-lint",
         "format": "prettier --write --parser typescript '**/*.{ts,tsx}'",
         "build": "tsc && vite build",
         "test": "vitest run --passWithNoTests",
@@ -18,57 +18,66 @@
         "test:ui": "vitest --ui",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "prepare": "husky install",
-        "generate-tree": "npx tsx src/tree-generator/index.ts"
+        "prepare": "husky",
+        "generate-tree": "pnpm tsx src/tree-generator/index.ts"
     },
     "lint-staged": {
         "*.{ts,tsx}": [
-            "npm run format",
-            "npm run lint",
-            "npm run test"
+            "pnpm format",
+            "pnpm lint",
+            "pnpm test"
         ]
     },
+    "prettier": "@dhis2/config-prettier",
     "keywords": [],
     "author": "Hendrik de Graaf",
     "license": "MIT",
     "devDependencies": {
-        "@commitlint/cli": "^18.4.4",
-        "@commitlint/config-conventional": "^18.4.4",
-        "@inquirer/prompts": "^3.3.0",
-        "@ls-lint/ls-lint": "^2.2.2",
-        "@storybook/addon-essentials": "^7.6.8",
-        "@storybook/addon-interactions": "^7.6.8",
-        "@storybook/addon-links": "^7.6.8",
-        "@storybook/addon-onboarding": "^1.0.10",
-        "@storybook/blocks": "^7.6.8",
-        "@storybook/react": "^7.6.8",
-        "@storybook/react-vite": "^7.6.8",
-        "@storybook/test": "^7.6.8",
-        "@testing-library/jest-dom": "^6.2.0",
-        "@testing-library/react": "^14.1.2",
-        "@types/react": "^18.2.48",
-        "@typescript-eslint/eslint-plugin": "^6.18.1",
-        "@typescript-eslint/parser": "^6.18.1",
-        "eslint": "^8.56.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-prettier": "^5.1.3",
-        "eslint-plugin-react": "^7.33.2",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "eslint-plugin-storybook": "^0.6.15",
-        "husky": "^8.0.0",
-        "jsdom": "^23.2.0",
-        "lint-staged": "^15.2.0",
-        "prettier": "^3.2.2",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "storybook": "^7.6.8",
+        "@commitlint/cli": "^20.5.0",
+        "@commitlint/config-conventional": "^20.5.0",
+        "@dhis2/config-eslint": "^0.2.2",
+        "@dhis2/config-prettier": "^0.2.2",
+        "@inquirer/prompts": "^8.3.2",
+        "@ls-lint/ls-lint": "^2.3.1",
+        "@storybook/addon-essentials": "^8.6.18",
+        "@storybook/addon-interactions": "^8.6.18",
+        "@storybook/addon-links": "^8.6.18",
+        "@storybook/blocks": "^8.6.18",
+        "@storybook/react": "^8.6.18",
+        "@storybook/react-vite": "^8.6.18",
+        "@storybook/test": "^8.6.18",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
+        "@types/node": "^25.5.2",
+        "@types/react": "^19.2.14",
+        "eslint": "^9.39.4",
+        "eslint-import-resolver-typescript": "^4.4.4",
+        "husky": "^9.1.7",
+        "jsdom": "^29.0.1",
+        "lint-staged": "^16.4.0",
+        "prettier": "^3.8.1",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "storybook": "^8.6.18",
+        "tsx": "^4.0.0",
+        "typescript": "^6.0.2",
+        "typescript-eslint": "^8.58.0",
         "unique-names-generator": "^4.7.1",
-        "vite": "^5.0.11",
-        "vite-plugin-dts": "^3.7.0",
-        "vitest": "^1.2.0"
+        "uuid": "^13.0.0",
+        "vite": "^6.0.3",
+        "vite-plugin-dts": "^4.5.4",
+        "vitest": "^4.1.2"
     },
     "peerDependencies": {
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4"
+    },
+    "dependencies": {
+        "@tanstack/react-virtual": "^3.13.23"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild"
+        ]
     }
 }

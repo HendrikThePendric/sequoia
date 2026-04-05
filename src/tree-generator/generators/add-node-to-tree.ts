@@ -1,6 +1,6 @@
-import { NodeDetailsGeneratorGenerator } from './generate-node-details'
 import { DetailsPerLevel, LevelDetails } from '../prompts/levels-prompts'
 import { getChildrenLength, isLeafNode } from '../randomness'
+import { NodeDetailsGeneratorGenerator } from './generate-node-details'
 import { TreeNode, Tree } from './generate-tree'
 
 type AddNodeToTreeOptions = {

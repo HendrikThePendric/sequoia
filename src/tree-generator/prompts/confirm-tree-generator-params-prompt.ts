@@ -1,4 +1,4 @@
-import select from '@inquirer/select'
+import { select } from '@inquirer/prompts'
 import { TreeGeneratorParameters } from '../generators/generate-tree'
 import { LevelDetails } from './levels-prompts'
 

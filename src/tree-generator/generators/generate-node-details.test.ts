@@ -20,7 +20,9 @@ const testCases: TestCase[] = [
 
 describe('Node Details Generator', () => {
     beforeAll(() => {
-        vi.spyOn(uuidExports, 'v4').mockReturnValue('mock-uuid-value')
+        vi.spyOn(uuidExports as UuidMock, 'v4').mockImplementation(
+            () => 'mock-uuid-value'
+        )
         vi.spyOn(uniqueNamesGeneratorExports, 'uniqueNamesGenerator')
         vi.mock('uuid', async (importOriginal) => {
             const original: UuidMock = await importOriginal()

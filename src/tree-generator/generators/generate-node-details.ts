@@ -1,5 +1,5 @@
+import type { Config } from 'unique-names-generator'
 import {
-    Config,
     adjectives,
     animals,
     colors,

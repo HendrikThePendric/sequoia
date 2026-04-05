@@ -1,6 +1,6 @@
-import { confirm, input } from '@inquirer/prompts'
 import fs from 'node:fs'
 import path from 'node:path'
+import { confirm, input } from '@inquirer/prompts'
 
 export async function filePathPrompts() {
     const projectRoot = process.env.PWD ?? ''

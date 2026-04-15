@@ -7,7 +7,7 @@ type UniqueNamesGeneratorMock = { uniqueNamesGenerator: () => string }
 type TestCase = [DisplayNameType, IdType]
 
 vi.mock('nanoid', () => ({
-    nanoid: () => 'mockId',
+    customAlphabet: () => () => 'mockId',
 }))
 
 vi.mock('unique-names-generator', async (importOriginal) => {
@@ -21,10 +21,8 @@ vi.mock('unique-names-generator', async (importOriginal) => {
 const testCases: TestCase[] = [
     ['name', 'int'],
     ['occurrence', 'int'],
-    ['path', 'int'],
-    ['name', 'uuid'],
-    ['occurrence', 'uuid'],
-    ['path', 'uuid'],
+    ['name', 'nanoid'],
+    ['occurrence', 'nanoid'],
 ]
 
 describe('Node Details Generator', () => {

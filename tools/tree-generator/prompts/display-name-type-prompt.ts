@@ -1,6 +1,6 @@
 import { select } from '@inquirer/prompts'
 
-export type DisplayNameType = 'name' | 'occurrence' | 'path'
+export type DisplayNameType = 'name' | 'occurrence'
 
 export async function displayNameTypePrompt(): Promise<DisplayNameType> {
     return await select({
@@ -15,11 +15,6 @@ export async function displayNameTypePrompt(): Promise<DisplayNameType> {
                 name: 'Occurrence based names (1-1-1)',
                 value: 'occurrence',
                 description: 'good for inspecting general nesting structure',
-            },
-            {
-                name: 'Path based names (id1/id2/id3)',
-                value: 'path',
-                description: 'perfect for inspecting specific hierarchies',
             },
         ],
         default: 'occurrence',

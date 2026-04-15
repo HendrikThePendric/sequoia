@@ -1,9 +1,9 @@
-export function isLeafNode(occurenceInPercent: number): boolean {
-    if (occurenceInPercent === 0) {
+export function isLeafNode(occurrenceInPercent: number): boolean {
+    if (occurrenceInPercent === 0) {
         return false
-    } else if (occurenceInPercent === 100) {
+    } else if (occurrenceInPercent === 100) {
         return true
     } else {
-        return occurenceInPercent / 100 > Math.random()
+        return occurrenceInPercent / 100 > Math.random()
     }
 }

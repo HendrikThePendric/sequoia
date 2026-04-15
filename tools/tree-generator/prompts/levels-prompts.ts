@@ -7,6 +7,17 @@ export type LevelDetails = {
 
 export type DetailsPerLevel = Map<number, LevelDetails>
 
+export function getLevelDetails(
+    detailsPerLevel: DetailsPerLevel,
+    level: number
+): LevelDetails {
+    const details = detailsPerLevel.get(level)
+    if (!details) {
+        throw new Error(`No level details found for level ${level}`)
+    }
+    return details
+}
+
 export async function levelsPrompts(): Promise<{
     numberOfLevels: number
     detailsPerLevel: DetailsPerLevel
@@ -29,7 +40,7 @@ export async function levelsPrompts(): Promise<{
             level === 1
                 ? 0 // No leaf nodes at root level
                 : await positiveIntegerInput(
-                      `Occurance of leaf nodes at level ${level} (in %):`,
+                      `Occurrence of leaf nodes at level ${level} (in %):`,
                       '20',
                       99
                   )

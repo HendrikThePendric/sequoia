@@ -1,194 +1,456 @@
-import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
-import treeData from '../__fixtures__/mock-tree-api-test-data/tall-tree.json'
-import { Tree, TreeNode } from '../tree-generator/generators/generate-tree'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import treeData from '../__fixtures__/mock-tree-api-test-data/tree.json'
+import { Tree } from '../tree-generator/generators/generate-tree'
 import { AsyncMockTreeApi } from './async-mock-tree-api'
+import { WalkedNode } from './mock-tree-api'
 
-describe('MockTreeApi', () => {
+describe('AsyncMockTreeApi', () => {
     const DELAY = 3
-    const PAGE_SIZE = 30
-    const tree = new AsyncMockTreeApi(treeData as Tree, DELAY, PAGE_SIZE)
-    const setTimeoutMock = vi.fn((callback) => callback())
+    const PAGE_SIZE = 3
+    const tree = new AsyncMockTreeApi(treeData as Tree, {
+        delay: DELAY,
+        pageSize: PAGE_SIZE,
+    })
+    const setTimeoutMock = vi.fn<(callback: () => void, delay: number) => void>(
+        (callback) => callback()
+    )
 
     beforeAll(() => {
         vi.stubGlobal('setTimeout', setTimeoutMock)
     })
 
     afterAll(() => {
+        vi.unstubAllGlobals()
         vi.clearAllMocks()
     })
 
-    test('calls setTimout with provided delay', () => {
-        tree.getNodeById('3')
-        tree.getNodesByIds(['1', '2'])
-        tree.getNodeChildren('2', 1)
-        tree.getNodeDescendants('2', 1)
-        tree.getFilteredNodes(
-            (node: TreeNode) => node.displayName.includes('2-2-3'),
-            1
-        )
-        expect(setTimeoutMock).toHaveBeenCalledTimes(5)
-        expect(setTimeoutMock).toHaveBeenNthCalledWith(
-            1,
-            expect.anything(),
-            DELAY
-        )
-        expect(setTimeoutMock).toHaveBeenNthCalledWith(
-            2,
-            expect.anything(),
-            DELAY
-        )
-        expect(setTimeoutMock).toHaveBeenNthCalledWith(
-            3,
-            expect.anything(),
-            DELAY
-        )
-        expect(setTimeoutMock).toHaveBeenNthCalledWith(
-            4,
-            expect.anything(),
-            DELAY
-        )
-        expect(setTimeoutMock).toHaveBeenNthCalledWith(
-            5,
-            expect.anything(),
-            DELAY
-        )
+    it('calls setTimeout with the configured delay for every method', () => {
+        tree.getNodeById('1')
+        tree.getNodesByIds(['1', '8'])
+        tree.getNodeChildren('1', 1)
+        tree.getNodeDescendants('1', 1)
+        tree.getFilteredNodes((node: WalkedNode) => node.level === 3, 1)
+        tree.getRootNodes(1)
+        expect(setTimeoutMock).toHaveBeenCalledTimes(6)
+        expect(
+            setTimeoutMock.mock.calls.every((call) => call[1] === DELAY)
+        ).toBe(true)
     })
+
     describe('paging', () => {
-        test('pager works correctly', async () => {
-            const actualPage1 = await tree.getNodeChildren('3', 1)
-            const actualPage2 = await tree.getNodeChildren('3', 2)
-            const actualLastPage = await tree.getNodeChildren('3', 13)
-            expect(actualPage1.pager).toEqual({
-                page: 1,
-                pageSize: 30,
-                pages: 13,
-                total: 361,
-            })
-            expect(actualPage2.pager).toEqual({
-                page: 2,
-                pageSize: 30,
-                pages: 13,
-                total: 361,
-            })
-            expect(actualPage1.results.length).toBe(30)
-            expect(actualPage2.results.length).toBe(30)
-            expect(actualLastPage.results.length).toBe(1)
-            // Check total
-            expect(
-                (actualPage1.pager.pages - 1) * actualPage1.pager.pageSize +
-                    actualLastPage.results.length
-            ).toBe(actualPage1.pager.total)
-            // End of page 1 and start of page 2 need to have adjacent IDs
-            const page1LastIdAsInt = parseInt(
-                actualPage1.results[actualPage1.results.length - 1].id
-            )
-            const page2FirstIdAsInt = parseInt(actualPage2.results[0].id)
-            expect(page2FirstIdAsInt - page1LastIdAsInt).toBe(1)
-        })
-        test('does not apply paging to getNodeById', async () => {
-            const actual = await tree.getNodeById('1')
-            expect(actual).toMatchInlineSnapshot(`
-              {
-                "children": [
-                  "2",
-                  "2698",
-                  "5584",
-                  "8581",
-                  "13183",
-                  "15526",
-                  "20256",
-                  "24429",
-                  "26306",
-                  "30654",
-                  "34246",
-                  "36724",
-                ],
-                "childrenCount": 12,
-                "displayName": "1",
-                "id": "1",
-                "level": 1,
-                "parent": null,
-                "path": "/1",
-              }
+        it('getNodeChildren paginates correctly', async () => {
+            // root "1" has 2 children, page size 3 => 1 page
+            const page1 = await tree.getNodeChildren('1', 1)
+            expect(page1).toMatchInlineSnapshot(`
+                {
+                  "pager": {
+                    "page": 1,
+                    "pageSize": 3,
+                    "pages": 1,
+                    "total": 2,
+                  },
+                  "results": [
+                    {
+                      "childrenCount": 2,
+                      "displayName": "1-1",
+                      "id": "2",
+                      "level": 2,
+                      "parent": "1",
+                      "path": "/1/2",
+                    },
+                    {
+                      "childrenCount": 2,
+                      "displayName": "1-2",
+                      "id": "5",
+                      "level": 2,
+                      "parent": "1",
+                      "path": "/1/5",
+                    },
+                  ],
+                }
             `)
         })
-        test('does not apply paging to getNodesByIds', async () => {
-            const actual = await tree.getNodesByIds(['1', '2'])
-            expect(actual).toMatchInlineSnapshot(`
-              [
+
+        it('getNodeDescendants spans multiple pages', async () => {
+            // root "1" has 6 descendants, page size 3 => 2 pages
+            const page1 = await tree.getNodeDescendants('1', 1)
+            const page2 = await tree.getNodeDescendants('1', 2)
+            expect(page1.pager).toMatchInlineSnapshot(`
                 {
-                  "children": [
-                    "2",
-                    "2698",
-                    "5584",
-                    "8581",
-                    "13183",
-                    "15526",
-                    "20256",
-                    "24429",
-                    "26306",
-                    "30654",
-                    "34246",
-                    "36724",
+                  "page": 1,
+                  "pageSize": 3,
+                  "pages": 2,
+                  "total": 6,
+                }
+            `)
+            expect(page2.pager).toMatchInlineSnapshot(`
+                {
+                  "page": 2,
+                  "pageSize": 3,
+                  "pages": 2,
+                  "total": 6,
+                }
+            `)
+            expect(page1.results).toMatchInlineSnapshot(`
+                [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1-1",
+                    "id": "2",
+                    "level": 2,
+                    "parent": "1",
+                    "path": "/1/2",
+                  },
+                  {
+                    "childrenCount": 0,
+                    "displayName": "1-1-1",
+                    "id": "3",
+                    "level": 3,
+                    "parent": "2",
+                    "path": "/1/2/3",
+                  },
+                  {
+                    "childrenCount": 0,
+                    "displayName": "1-1-2",
+                    "id": "4",
+                    "level": 3,
+                    "parent": "2",
+                    "path": "/1/2/4",
+                  },
+                ]
+            `)
+            expect(page2.results).toMatchInlineSnapshot(`
+                [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1-2",
+                    "id": "5",
+                    "level": 2,
+                    "parent": "1",
+                    "path": "/1/5",
+                  },
+                  {
+                    "childrenCount": 0,
+                    "displayName": "1-2-1",
+                    "id": "6",
+                    "level": 3,
+                    "parent": "5",
+                    "path": "/1/5/6",
+                  },
+                  {
+                    "childrenCount": 0,
+                    "displayName": "1-2-2",
+                    "id": "7",
+                    "level": 3,
+                    "parent": "5",
+                    "path": "/1/5/7",
+                  },
+                ]
+            `)
+        })
+
+        it('getFilteredNodes with ancestors paginates correctly', async () => {
+            const page1 = await tree.getFilteredNodes(
+                (node) => node.displayName === '2-2-1',
+                1,
+                { includeAncestors: true }
+            )
+            expect(page1).toMatchInlineSnapshot(`
+                {
+                  "pager": {
+                    "page": 1,
+                    "pageSize": 3,
+                    "pages": 1,
+                    "total": 3,
+                  },
+                  "results": [
+                    {
+                      "childrenCount": 2,
+                      "displayName": "2",
+                      "id": "8",
+                      "level": 1,
+                      "parent": null,
+                      "path": "/8",
+                    },
+                    {
+                      "childrenCount": 2,
+                      "displayName": "2-2",
+                      "id": "12",
+                      "level": 2,
+                      "parent": "8",
+                      "path": "/8/12",
+                    },
+                    {
+                      "childrenCount": 0,
+                      "displayName": "2-2-1",
+                      "id": "13",
+                      "level": 3,
+                      "parent": "12",
+                      "path": "/8/12/13",
+                    },
                   ],
-                  "childrenCount": 12,
+                }
+            `)
+        })
+
+        it('throws for an invalid page number', async () => {
+            await expect(tree.getNodeChildren('1', 0)).rejects.toThrow(
+                'Parameter `page` must be a positive integer'
+            )
+        })
+
+        it('does not apply paging to getNodeById', async () => {
+            const result = await tree.getNodeById('1')
+            expect(result).toMatchInlineSnapshot(`
+                {
+                  "childrenCount": 2,
                   "displayName": "1",
                   "id": "1",
                   "level": 1,
                   "parent": null,
                   "path": "/1",
-                },
+                }
+            `)
+        })
+
+        it('does not apply paging to getNodesByIds', async () => {
+            const result = await tree.getNodesByIds(['1', '8'])
+            expect(result).toMatchInlineSnapshot(`
+                [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1",
+                    "id": "1",
+                    "level": 1,
+                    "parent": null,
+                    "path": "/1",
+                  },
+                  {
+                    "childrenCount": 2,
+                    "displayName": "2",
+                    "id": "8",
+                    "level": 1,
+                    "parent": null,
+                    "path": "/8",
+                  },
+                ]
+            `)
+        })
+
+        it('returns empty results when requesting a page beyond the last', async () => {
+            const result = await tree.getNodeDescendants('1', 3)
+            expect(result.results).toEqual([])
+            expect(result.pager).toMatchInlineSnapshot(`
                 {
-                  "children": [
-                    "3",
-                    "365",
-                    "914",
-                    "1507",
-                    "1802",
-                    "2163",
+                  "page": 3,
+                  "pageSize": 3,
+                  "pages": 2,
+                  "total": 6,
+                }
+            `)
+        })
+
+        it('returns empty results when no nodes match the filter', async () => {
+            const result = await tree.getFilteredNodes(() => false, 1)
+            expect(result.results).toEqual([])
+            expect(result.pager).toMatchInlineSnapshot(`
+                {
+                  "page": 1,
+                  "pageSize": 3,
+                  "pages": 0,
+                  "total": 0,
+                }
+            `)
+        })
+
+        it('getNodeDescendants respects maxLevel', async () => {
+            const result = await tree.getNodeDescendants('1', 1, 2)
+            expect(result).toMatchInlineSnapshot(`
+                {
+                  "pager": {
+                    "page": 1,
+                    "pageSize": 3,
+                    "pages": 1,
+                    "total": 2,
+                  },
+                  "results": [
+                    {
+                      "childrenCount": 2,
+                      "displayName": "1-1",
+                      "id": "2",
+                      "level": 2,
+                      "parent": "1",
+                      "path": "/1/2",
+                    },
+                    {
+                      "childrenCount": 2,
+                      "displayName": "1-2",
+                      "id": "5",
+                      "level": 2,
+                      "parent": "1",
+                      "path": "/1/5",
+                    },
                   ],
-                  "childrenCount": 6,
+                }
+            `)
+        })
+
+        it('getRootNodes paginates correctly', async () => {
+            const result = await tree.getRootNodes(1)
+            expect(result).toMatchInlineSnapshot(`
+                {
+                  "pager": {
+                    "page": 1,
+                    "pageSize": 3,
+                    "pages": 1,
+                    "total": 2,
+                  },
+                  "results": [
+                    {
+                      "childrenCount": 2,
+                      "displayName": "1",
+                      "id": "1",
+                      "level": 1,
+                      "parent": null,
+                      "path": "/1",
+                    },
+                    {
+                      "childrenCount": 2,
+                      "displayName": "2",
+                      "id": "8",
+                      "level": 1,
+                      "parent": null,
+                      "path": "/8",
+                    },
+                  ],
+                }
+            `)
+        })
+    })
+})
+
+describe('AsyncMockTreeApi (rootIds)', () => {
+    const DELAY = 3
+    const PAGE_SIZE = 2
+    const setTimeoutMock = vi.fn<(callback: () => void, delay: number) => void>(
+        (callback) => callback()
+    )
+
+    beforeAll(() => {
+        vi.stubGlobal('setTimeout', setTimeoutMock)
+    })
+
+    afterAll(() => {
+        vi.unstubAllGlobals()
+        vi.clearAllMocks()
+    })
+
+    const tree = new AsyncMockTreeApi(treeData as Tree, {
+        delay: DELAY,
+        pageSize: PAGE_SIZE,
+    })
+
+    it('getRootNodes with rootIds returns those nodes sorted by displayName', async () => {
+        const result = await tree.getRootNodes(1, ['12', '2'])
+        expect(result).toMatchInlineSnapshot(`
+            {
+              "pager": {
+                "page": 1,
+                "pageSize": 2,
+                "pages": 1,
+                "total": 2,
+              },
+              "results": [
+                {
+                  "childrenCount": 2,
                   "displayName": "1-1",
                   "id": "2",
                   "level": 2,
                   "parent": "1",
                   "path": "/1/2",
                 },
-              ]
-            `)
-        })
-        test('does apply paging to getNodeChildren', async () => {
-            const actual = await tree.getNodeChildren('2', 1)
-            expect(actual.pager).toMatchInlineSnapshot(`
-              {
+                {
+                  "childrenCount": 2,
+                  "displayName": "2-2",
+                  "id": "12",
+                  "level": 2,
+                  "parent": "8",
+                  "path": "/8/12",
+                },
+              ],
+            }
+        `)
+    })
+
+    it('getFilteredNodes with rootIds scopes to those subtrees', async () => {
+        const result = await tree.getFilteredNodes(
+            (node) => node.level === 3,
+            1,
+            { rootIds: ['2'] }
+        )
+        expect(result).toMatchInlineSnapshot(`
+            {
+              "pager": {
                 "page": 1,
-                "pageSize": 30,
+                "pageSize": 2,
                 "pages": 1,
-                "total": 6,
-              }
-            `)
-        })
-        test('does apply paging to getNodeDescendants', async () => {
-            const actual = await tree.getNodeDescendants('2', 1)
-            expect(actual.pager).toMatchInlineSnapshot(`
-              {
+                "total": 2,
+              },
+              "results": [
+                {
+                  "childrenCount": 0,
+                  "displayName": "1-1-1",
+                  "id": "3",
+                  "level": 3,
+                  "parent": "2",
+                  "path": "/1/2/3",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "1-1-2",
+                  "id": "4",
+                  "level": 3,
+                  "parent": "2",
+                  "path": "/1/2/4",
+                },
+              ],
+            }
+        `)
+    })
+
+    it('getFilteredNodes with rootIds and includeAncestors stops at the root boundary', async () => {
+        const result = await tree.getFilteredNodes(
+            (node) => node.displayName === '2-2-1',
+            1,
+            { rootIds: ['12'], includeAncestors: true }
+        )
+        expect(result).toMatchInlineSnapshot(`
+            {
+              "pager": {
                 "page": 1,
-                "pageSize": 30,
-                "pages": 90,
-                "total": 2695,
-              }
-            `)
-        })
-        test('does apply paging to getFilteredNodes', async () => {
-            const actual = await tree.getFilteredNodes(() => true, 1)
-            expect(actual.pager).toMatchInlineSnapshot(`
-              {
-                "page": 1,
-                "pageSize": 30,
-                "pages": 1373,
-                "total": 41163,
-              }
-            `)
-        })
+                "pageSize": 2,
+                "pages": 1,
+                "total": 2,
+              },
+              "results": [
+                {
+                  "childrenCount": 2,
+                  "displayName": "2-2",
+                  "id": "12",
+                  "level": 2,
+                  "parent": "8",
+                  "path": "/8/12",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "2-2-1",
+                  "id": "13",
+                  "level": 3,
+                  "parent": "12",
+                  "path": "/8/12/13",
+                },
+              ],
+            }
+        `)
     })
 })

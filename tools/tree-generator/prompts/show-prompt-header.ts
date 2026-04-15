@@ -14,6 +14,5 @@ const LOGO = [
 ].join('\n')
 
 export function showPromptHeader() {
-    console.clear()
     console.log(GREEN, LOGO)
 }

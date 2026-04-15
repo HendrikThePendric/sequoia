@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { customAlphabet } from 'nanoid'
 import type { Config } from 'unique-names-generator'
 import {
     adjectives,
@@ -8,12 +8,20 @@ import {
 } from 'unique-names-generator'
 import { DisplayNameType } from '../prompts/display-name-type-prompt'
 import { IdType } from '../prompts/id-type-prompt'
-import { TreeNode } from './generate-tree'
 
-export type NodeDetailsGeneratorGenerator = (
+const NANOID_ALPHABET =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+const nanoid = customAlphabet(NANOID_ALPHABET, 6)
+
+export type NodeDetails = {
+    id: string
+    displayName: string
+}
+
+export type NodeDetailsGenerator = (
     index: number,
-    parentNode?: TreeNode
-) => TreeNode
+    parentNode?: NodeDetails
+) => NodeDetails
 
 const randomNameConfig: Config = {
     dictionaries: [adjectives, colors, animals],
@@ -24,27 +32,18 @@ const randomNameConfig: Config = {
 export const createNodeDetailsGenerator = (
     displayNameType: DisplayNameType,
     idType: IdType
-): NodeDetailsGeneratorGenerator => {
+): NodeDetailsGenerator => {
     let integerId = 0
 
-    return (index: number, parentNode?: TreeNode) => {
-        const id = idType === 'uuid' ? nanoid(6) : (++integerId).toString()
-        const path = parentNode?.path ? `${parentNode.path}/${id}` : `/${id}`
+    return (index: number, parentNode?: NodeDetails): NodeDetails => {
+        const id = idType === 'nanoid' ? nanoid() : (++integerId).toString()
         const displayName =
             displayNameType === 'name'
                 ? uniqueNamesGenerator(randomNameConfig)
-                : displayNameType === 'occurrence'
-                  ? parentNode?.displayName
-                      ? `${parentNode.displayName}-${index + 1}`
-                      : String(index + 1)
-                  : path
+                : parentNode?.displayName
+                  ? `${parentNode.displayName}-${index + 1}`
+                  : String(index + 1)
 
-        return {
-            id,
-            displayName,
-            level: parentNode?.level ? parentNode.level + 1 : 1,
-            path,
-            parent: parentNode?.id ?? null,
-        }
+        return { id, displayName }
     }
 }

@@ -1,51 +1,47 @@
-import { DetailsPerLevel, LevelDetails } from '../prompts/levels-prompts'
+import { DetailsPerLevel, getLevelDetails } from '../prompts/levels-prompts'
 import { getChildrenLength, isLeafNode } from '../randomness'
-import { NodeDetailsGeneratorGenerator } from './generate-node-details'
-import { TreeNode, Tree } from './generate-tree'
+import { NodeDetails, NodeDetailsGenerator } from './generate-node-details'
+import { TreeNode } from './generate-tree'
 
-type AddNodeToTreeOptions = {
+type BuildNodeOptions = {
     index: number
-    generateNodeDetails: NodeDetailsGeneratorGenerator
+    generateNodeDetails: NodeDetailsGenerator
     numberOfLevels: number
     detailsPerLevel: DetailsPerLevel
-    parentNode?: TreeNode
-    tree: Tree
+    depth: number
+    parentNode?: NodeDetails
 }
-export function addNodeToTree({
+
+export function buildNode({
     index,
     generateNodeDetails,
     numberOfLevels,
     detailsPerLevel,
+    depth,
     parentNode,
-    tree,
-}: AddNodeToTreeOptions) {
+}: BuildNodeOptions): TreeNode {
     const nodeDetails = generateNodeDetails(index, parentNode)
-    const levelDetails = detailsPerLevel.get(nodeDetails.level) as LevelDetails
-    const childrenCount =
-        numberOfLevels === nodeDetails.level ||
-        isLeafNode(levelDetails.percentageOfLeafNodes)
+    const isLastLevel = depth === numberOfLevels
+    let childrenCount = 0
+    if (!isLastLevel) {
+        const levelDetails = getLevelDetails(detailsPerLevel, depth)
+        childrenCount = isLeafNode(levelDetails.percentageOfLeafNodes)
             ? 0
             : getChildrenLength(levelDetails.childrenLength)
-    const children = []
-    if (childrenCount > 0) {
-        for (let childIndex = 0; childIndex < childrenCount; childIndex++) {
-            const childNode = addNodeToTree({
+    }
+
+    const children: TreeNode[] = []
+    for (let childIndex = 0; childIndex < childrenCount; childIndex++) {
+        children.push(
+            buildNode({
                 index: childIndex,
                 generateNodeDetails,
                 numberOfLevels,
                 detailsPerLevel,
+                depth: depth + 1,
                 parentNode: nodeDetails,
-                tree,
             })
-            children.push(childNode.id)
-        }
+        )
     }
-    const node: TreeNode = {
-        ...nodeDetails,
-        childrenCount,
-        children,
-    }
-
-    tree[node.id] = node
-    return node
+    return { ...nodeDetails, children }
 }

@@ -1,6 +1,6 @@
 import { select } from '@inquirer/prompts'
 import { TreeGeneratorParameters } from '../generators/generate-tree'
-import { LevelDetails } from './levels-prompts'
+import { getLevelDetails } from './levels-prompts'
 
 type ConfirmTreeGeneratorParamsPromptOptions = Omit<
     TreeGeneratorParameters,
@@ -11,7 +11,7 @@ const MAX_SAFE_LENGTH = 1000000
 
 export async function confirmTreeGeneratorParamsPrompt(
     options: ConfirmTreeGeneratorParamsPromptOptions
-) {
+): Promise<boolean> {
     const estimatedNodeLength = computeEstimatedNodeLength(options)
 
     if (estimatedNodeLength > MAX_SAFE_LENGTH) {
@@ -47,7 +47,7 @@ export async function confirmTreeGeneratorParamsPrompt(
         })
 
         if (answer === 'exit') {
-            process.exit(1)
+            process.exit(0)
         }
 
         return answer === 'proceed'
@@ -60,24 +60,26 @@ export function computeEstimatedNodeLength({
     numberOfRootNodes,
     numberOfLevels,
     detailsPerLevel,
-}: ConfirmTreeGeneratorParamsPromptOptions) {
-    const { cummulativeCount: nodesCountPerRoot } = Array.from({
+}: ConfirmTreeGeneratorParamsPromptOptions): number {
+    const { cumulativeCount: nodesCountPerRoot } = Array.from({
         length: numberOfLevels - 1,
-    }).reduce<{ parentsCount: number; cummulativeCount: number }>(
+    }).reduce<{ parentsCount: number; cumulativeCount: number }>(
         (acc, _, index) => {
-            const { childrenLength, percentageOfLeafNodes } =
-                detailsPerLevel.get(index + 1) as LevelDetails
+            const { childrenLength, percentageOfLeafNodes } = getLevelDetails(
+                detailsPerLevel,
+                index + 1
+            )
             const leafNodesCount =
                 childrenLength * (percentageOfLeafNodes / 100)
             const childrenCount =
                 acc.parentsCount * (childrenLength - leafNodesCount)
             acc.parentsCount = childrenCount
-            acc.cummulativeCount += childrenCount
+            acc.cumulativeCount += childrenCount
             return acc
         },
         {
             parentsCount: 1,
-            cummulativeCount: 1,
+            cumulativeCount: 1,
         }
     )
     return Math.round(nodesCountPerRoot * numberOfRootNodes)

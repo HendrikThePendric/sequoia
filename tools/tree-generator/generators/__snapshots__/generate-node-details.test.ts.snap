@@ -4,9 +4,6 @@ exports[`Node Details Generator > Name type = name 	 ID type = int 1`] = `
 {
   "displayName": "A Mocked Name",
   "id": "1",
-  "level": 1,
-  "parent": null,
-  "path": "/1",
 }
 `;
 
@@ -14,29 +11,20 @@ exports[`Node Details Generator > Name type = name 	 ID type = int 2`] = `
 {
   "displayName": "A Mocked Name",
   "id": "2",
-  "level": 2,
-  "parent": "1",
-  "path": "/1/2",
 }
 `;
 
-exports[`Node Details Generator > Name type = name 	 ID type = uuid 1`] = `
+exports[`Node Details Generator > Name type = name 	 ID type = nanoid 1`] = `
 {
   "displayName": "A Mocked Name",
   "id": "mockId",
-  "level": 1,
-  "parent": null,
-  "path": "/mockId",
 }
 `;
 
-exports[`Node Details Generator > Name type = name 	 ID type = uuid 2`] = `
+exports[`Node Details Generator > Name type = name 	 ID type = nanoid 2`] = `
 {
   "displayName": "A Mocked Name",
   "id": "mockId",
-  "level": 2,
-  "parent": "mockId",
-  "path": "/mockId/mockId",
 }
 `;
 
@@ -44,9 +32,6 @@ exports[`Node Details Generator > Name type = occurrence 	 ID type = int 1`] = `
 {
   "displayName": "1",
   "id": "1",
-  "level": 1,
-  "parent": null,
-  "path": "/1",
 }
 `;
 
@@ -54,68 +39,19 @@ exports[`Node Details Generator > Name type = occurrence 	 ID type = int 2`] = `
 {
   "displayName": "1-2",
   "id": "2",
-  "level": 2,
-  "parent": "1",
-  "path": "/1/2",
 }
 `;
 
-exports[`Node Details Generator > Name type = occurrence 	 ID type = uuid 1`] = `
+exports[`Node Details Generator > Name type = occurrence 	 ID type = nanoid 1`] = `
 {
   "displayName": "1",
   "id": "mockId",
-  "level": 1,
-  "parent": null,
-  "path": "/mockId",
 }
 `;
 
-exports[`Node Details Generator > Name type = occurrence 	 ID type = uuid 2`] = `
+exports[`Node Details Generator > Name type = occurrence 	 ID type = nanoid 2`] = `
 {
   "displayName": "1-2",
   "id": "mockId",
-  "level": 2,
-  "parent": "mockId",
-  "path": "/mockId/mockId",
-}
-`;
-
-exports[`Node Details Generator > Name type = path 	 ID type = int 1`] = `
-{
-  "displayName": "/1",
-  "id": "1",
-  "level": 1,
-  "parent": null,
-  "path": "/1",
-}
-`;
-
-exports[`Node Details Generator > Name type = path 	 ID type = int 2`] = `
-{
-  "displayName": "/1/2",
-  "id": "2",
-  "level": 2,
-  "parent": "1",
-  "path": "/1/2",
-}
-`;
-
-exports[`Node Details Generator > Name type = path 	 ID type = uuid 1`] = `
-{
-  "displayName": "/mockId",
-  "id": "mockId",
-  "level": 1,
-  "parent": null,
-  "path": "/mockId",
-}
-`;
-
-exports[`Node Details Generator > Name type = path 	 ID type = uuid 2`] = `
-{
-  "displayName": "/mockId/mockId",
-  "id": "mockId",
-  "level": 2,
-  "parent": "mockId",
-  "path": "/mockId/mockId",
 }
 `;

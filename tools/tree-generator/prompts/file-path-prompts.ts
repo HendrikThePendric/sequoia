@@ -2,7 +2,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { confirm, input } from '@inquirer/prompts'
 
-export async function filePathPrompts() {
+export async function filePathPrompts(): Promise<{
+    filePath: string
+    dir: string
+}> {
     const projectRoot = process.env.PWD ?? ''
     const dir = await input({
         message: 'Destination folder:',

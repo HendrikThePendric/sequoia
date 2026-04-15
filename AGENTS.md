@@ -37,9 +37,20 @@ This library may be moved to the [dhis2 org](https://github.com/dhis2) eventuall
 - The library accepts an **adapter / data-source interface** that consumers implement to connect their backend. This decouples the hooks from any specific fetch mechanism. The adapter must support paginated child loading and search with ancestor inclusion (so matched nodes can be shown in tree context).
 - Node typing: nodes have required fields but may carry additional consumer data. The exact generic approach is still being explored -- prefer the simplest option that works.
 
+### Multi-Root Organisation Units
+
+In DHIS2, nodes in the tree are **organisation units**. A user is assigned one or more **root organisation units**, meaning the user cannot see units higher up the hierarchy. This has two consequences:
+
+1. Instead of a single tree, we display and fetch from **multiple trees** (one per root org unit).
+2. A single user can have **different root org units in different contexts** (e.g. data-entry vs. data-analysis), so the set of visible trees can change.
+
+Root org units are ordered by `displayName` and treated as siblings -- first all results under "Root A", then all results under "Root B". The mock API and the future hook layer both accept a `rootIds` parameter to model this.
+
 ### Existing Mock API vs. Hook Layer
 
-The `src/tree-generator/` and `src/mock-tree-api/` code predates the hook architecture. It exists to produce large test datasets and simulate a paginated async backend. This code is **not** part of the hooks' public API -- it serves as the test data layer. Its internal types (e.g. `TreeNode`) may not match the hook layer's internal `NodeState` shape.
+The `tools/tree-generator/` and `tools/mock-tree-api/` code predates the hook architecture. It exists to produce large test datasets and simulate a paginated async backend. This code is **not** part of the hooks' public API -- it serves as the test data layer. Its internal types (e.g. `TreeNode`) may not match the hook layer's internal `NodeState` shape.
+
+Both `MockTreeApi` and `AsyncMockTreeApi` accept a `rootIds` option that scopes the API to specific subtrees. When provided, the specified nodes are found in the full tree, extracted with their subtrees, sorted by `displayName`, and walked as the new root nodes (level 1, `parent: null`). All queries -- children, descendants, filtered nodes -- are automatically scoped to only the extracted subtrees. A `getRootNodes()` method returns the root-level nodes visible to the current context.
 
 ### State Management
 

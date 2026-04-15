@@ -1,6 +1,6 @@
 import { select } from '@inquirer/prompts'
 
-export type IdType = 'int' | 'uuid'
+export type IdType = 'int' | 'nanoid'
 
 export async function idTypePrompt(): Promise<IdType> {
     return await select({
@@ -12,7 +12,7 @@ export async function idTypePrompt(): Promise<IdType> {
             },
             {
                 name: 'Short random (6 chars)',
-                value: 'uuid',
+                value: 'nanoid',
             },
         ],
         default: 'int',

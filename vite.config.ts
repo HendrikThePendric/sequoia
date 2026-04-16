@@ -1,6 +1,5 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import { defineConfig } from 'vitest/config'
 import { name, peerDependencies } from './package.json'
 
 export default defineConfig({

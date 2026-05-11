@@ -22,6 +22,12 @@ export type FilterOptions = {
     rootIds?: string[]
 }
 
+export type FilteredResult<NodeType> = {
+    results: NodeType[]
+    matchedIds: string[]
+    ancestorIds: string[]
+}
+
 type NodeType<TReturnChildIds extends boolean> = TReturnChildIds extends true
     ? WalkedNodeWithChildIds
     : WalkedNode
@@ -173,14 +179,19 @@ export class MockTreeApi<TReturnChildIds extends boolean = false> {
     getFilteredNodes(
         predicate: (node: NodeType<TReturnChildIds>) => boolean,
         options: FilterOptions = {}
-    ): NodeType<TReturnChildIds>[] {
+    ): FilteredResult<NodeType<TReturnChildIds>> {
         const { includeAncestors = false, rootIds } = options
         const scopedNodes = rootIds
             ? this.#nodesUnderRoots(rootIds)
             : this.#nodes
 
         if (!includeAncestors) {
-            return scopedNodes.filter(predicate)
+            const matched = scopedNodes.filter(predicate)
+            return {
+                results: matched,
+                matchedIds: matched.map((n) => n.id),
+                ancestorIds: [],
+            }
         }
 
         const ancestorIds = new Set<string>()
@@ -197,9 +208,13 @@ export class MockTreeApi<TReturnChildIds extends boolean = false> {
             }
         }
 
-        return scopedNodes.filter(
-            (node) => matchedIds.has(node.id) || ancestorIds.has(node.id)
-        )
+        return {
+            results: scopedNodes.filter(
+                (node) => matchedIds.has(node.id) || ancestorIds.has(node.id)
+            ),
+            matchedIds: [...matchedIds],
+            ancestorIds: [...ancestorIds],
+        }
     }
 
     #nodesUnderRoots(rootIds: string[]): NodeType<TReturnChildIds>[] {

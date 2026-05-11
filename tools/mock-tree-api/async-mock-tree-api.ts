@@ -18,6 +18,13 @@ type PagedResults<TNode> = {
     results: TNode[]
 }
 
+type PagedFilteredResult<TNode> = {
+    pager: Pager
+    results: TNode[]
+    matchedIds: string[]
+    ancestorIds: string[]
+}
+
 type AsyncMockTreeApiOptions<TReturnChildIds extends boolean> = {
     returnChildIds?: TReturnChildIds
     delay?: number
@@ -85,12 +92,16 @@ export class AsyncMockTreeApi<TReturnChildIds extends boolean = false> {
         predicate: (node: NodeType<TReturnChildIds>) => boolean,
         page: number,
         options: FilterOptions = {}
-    ): Promise<PagedResults<NodeType<TReturnChildIds>>> {
+    ): Promise<PagedFilteredResult<NodeType<TReturnChildIds>>> {
         await this.#wait()
-        return this.#pageResults(
-            this.#tree.getFilteredNodes(predicate, options),
-            page
-        )
+        const full = this.#tree.getFilteredNodes(predicate, options)
+        const paged = this.#pageResults(full.results, page)
+        return {
+            pager: paged.pager,
+            results: paged.results,
+            matchedIds: full.matchedIds,
+            ancestorIds: full.ancestorIds,
+        }
     }
 
     async #wait(): Promise<void> {

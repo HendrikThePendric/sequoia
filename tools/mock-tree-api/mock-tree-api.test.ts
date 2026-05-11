@@ -160,6 +160,7 @@ describe('MockTreeApi (default: childrenCount)', () => {
     it('getFilteredNodes without ancestors returns only matched nodes', () => {
         expect(
             tree.getFilteredNodes((node) => node.displayName.includes('1-1'))
+                .results
         ).toMatchInlineSnapshot(`
           [
             {
@@ -202,7 +203,7 @@ describe('MockTreeApi (default: childrenCount)', () => {
         expect(
             tree.getFilteredNodes((node) => node.displayName === '2-2-1', {
                 includeAncestors: true,
-            })
+            }).results
         ).toMatchInlineSnapshot(`
             [
               {
@@ -261,6 +262,7 @@ describe('MockTreeApi (default: childrenCount)', () => {
     it('getFilteredNodes returns empty array when no nodes match', () => {
         expect(
             tree.getFilteredNodes((node) => node.displayName === 'nonexistent')
+                .results
         ).toEqual([])
     })
 
@@ -268,7 +270,7 @@ describe('MockTreeApi (default: childrenCount)', () => {
         expect(
             tree.getFilteredNodes((node) => node.id === '1', {
                 includeAncestors: true,
-            })
+            }).results
         ).toMatchInlineSnapshot(`
             [
               {
@@ -395,14 +397,14 @@ describe('MockTreeApi (rootIds)', () => {
         expect(
             tree.getFilteredNodes((node) => node.displayName === '1-2-1', {
                 rootIds: ['2'],
-            })
+            }).results
         ).toEqual([])
 
         // "1-1-1" (id "3") is under root "2"
         expect(
             tree.getFilteredNodes((node) => node.displayName === '1-1-1', {
                 rootIds: ['2'],
-            })
+            }).results
         ).toMatchInlineSnapshot(`
             [
               {
@@ -424,7 +426,7 @@ describe('MockTreeApi (rootIds)', () => {
             (node) => node.displayName === '2-2-1',
             { rootIds: ['12'], includeAncestors: true }
         )
-        expect(result).toMatchInlineSnapshot(`
+        expect(result.results).toMatchInlineSnapshot(`
             [
               {
                 "childrenCount": 2,
@@ -445,7 +447,7 @@ describe('MockTreeApi (rootIds)', () => {
             ]
         `)
         // Verify "8" is NOT in the results
-        expect(result.find((n) => n.id === '8')).toBeUndefined()
+        expect(result.results.find((n) => n.id === '8')).toBeUndefined()
     })
 
     it('getFilteredNodes with multiple rootIds searches across all specified subtrees', () => {
@@ -453,7 +455,7 @@ describe('MockTreeApi (rootIds)', () => {
         const result = tree.getFilteredNodes((node) => node.level === 3, {
             rootIds: ['2', '12'],
         })
-        expect(result).toMatchInlineSnapshot(`
+        expect(result.results).toMatchInlineSnapshot(`
             [
               {
                 "childrenCount": 0,
@@ -495,8 +497,8 @@ describe('MockTreeApi (rootIds)', () => {
         const result = tree.getFilteredNodes((node) => node.id === '2', {
             rootIds: ['2'],
         })
-        expect(result).toHaveLength(1)
-        expect(result[0].id).toBe('2')
+        expect(result.results).toHaveLength(1)
+        expect(result.results[0].id).toBe('2')
     })
 })
 
@@ -535,6 +537,6 @@ describe('MockTreeApi (empty tree)', () => {
     })
 
     it('getFilteredNodes returns empty array', () => {
-        expect(emptyTree.getFilteredNodes(() => true)).toEqual([])
+        expect(emptyTree.getFilteredNodes(() => true).results).toEqual([])
     })
 })

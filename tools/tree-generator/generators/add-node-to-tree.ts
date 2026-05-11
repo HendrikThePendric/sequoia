@@ -43,5 +43,6 @@ export function buildNode({
             })
         )
     }
+    children.sort((a, b) => a.displayName.localeCompare(b.displayName))
     return { ...nodeDetails, children }
 }

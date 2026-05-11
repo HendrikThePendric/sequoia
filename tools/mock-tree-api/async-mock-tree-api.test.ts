@@ -155,41 +155,33 @@ describe('AsyncMockTreeApi', () => {
                 1,
                 { includeAncestors: true }
             )
-            expect(page1).toMatchInlineSnapshot(`
-                {
-                  "pager": {
-                    "page": 1,
-                    "pageSize": 3,
-                    "pages": 1,
-                    "total": 3,
+            expect(page1.results).toMatchInlineSnapshot(`
+                [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "2",
+                    "id": "8",
+                    "level": 1,
+                    "parent": null,
+                    "path": "/8",
                   },
-                  "results": [
-                    {
-                      "childrenCount": 2,
-                      "displayName": "2",
-                      "id": "8",
-                      "level": 1,
-                      "parent": null,
-                      "path": "/8",
-                    },
-                    {
-                      "childrenCount": 2,
-                      "displayName": "2-2",
-                      "id": "12",
-                      "level": 2,
-                      "parent": "8",
-                      "path": "/8/12",
-                    },
-                    {
-                      "childrenCount": 0,
-                      "displayName": "2-2-1",
-                      "id": "13",
-                      "level": 3,
-                      "parent": "12",
-                      "path": "/8/12/13",
-                    },
-                  ],
-                }
+                  {
+                    "childrenCount": 2,
+                    "displayName": "2-2",
+                    "id": "12",
+                    "level": 2,
+                    "parent": "8",
+                    "path": "/8/12",
+                  },
+                  {
+                    "childrenCount": 0,
+                    "displayName": "2-2-1",
+                    "id": "13",
+                    "level": 3,
+                    "parent": "12",
+                    "path": "/8/12/13",
+                  },
+                ]
             `)
         })
 
@@ -390,6 +382,11 @@ describe('AsyncMockTreeApi (rootIds)', () => {
         )
         expect(result).toMatchInlineSnapshot(`
             {
+              "ancestorIds": [],
+              "matchedIds": [
+                "3",
+                "4",
+              ],
               "pager": {
                 "page": 1,
                 "pageSize": 2,
@@ -426,6 +423,13 @@ describe('AsyncMockTreeApi (rootIds)', () => {
         )
         expect(result).toMatchInlineSnapshot(`
             {
+              "ancestorIds": [
+                "8",
+                "12",
+              ],
+              "matchedIds": [
+                "13",
+              ],
               "pager": {
                 "page": 1,
                 "pageSize": 2,

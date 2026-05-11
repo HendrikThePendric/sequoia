@@ -74,6 +74,20 @@ These are directional, not final:
 - `useTreeKeyboard` -- keyboard navigation
 - `useTreeField` -- controlled form-field wrapper
 
+## Dealing with Ambiguity
+
+Ambiguity comes in several forms:
+
+- Instructions that can be interpreted in multiple ways.
+- Instructions that conflict with how the surrounding code is structured.
+- Instructions that use terms which could mean different things in context.
+
+In all of these cases the result is the same: it is not 100% clear what the correct way forward is.
+
+**When you encounter ambiguity, stop and prompt the user. Never guess or try to infer the most probable interpretation.** It is more efficient to spend time clarifying requirements until they are crystal clear than to have to redo an incorrectly implemented solution.
+
+Before writing any code, ask yourself: *Am I certain I understand what the user wants? Could this be interpreted differently? Does this fit with the existing architecture?* If the answer to any of these is not a clear "yes", ask first.
+
 ## Code Conventions
 
 ### File & Directory Naming
@@ -118,6 +132,16 @@ The following MCP tools are available in this project:
 - **`grep`** (Vercel) -- Use for searching code examples on GitHub when unsure how to implement something.
 - **`github`** -- Use for interacting with this repo's issues, PRs, and actions on GitHub.
 - **`neovim`** -- Use for interacting with the active Neovim editor session.
+
+## Cost Efficiency
+
+To keep API costs low, delegate work to cheaper subagent models whenever possible:
+
+- **Code review**: After writing a significant piece of code, use the Task tool with the `reviewer` subagent to review it. Do NOT review code yourself — always delegate.
+- **Codebase exploration**: Use the Task tool with the `explore` subagent for searching, grepping, and answering questions about the codebase. The `explore` subagent is read-only and runs on a cheaper model.
+- **Complex multi-step tasks**: Use the Task tool with the `general` subagent when you need to execute multiple units of work in parallel.
+
+These subagents use `deepseek/deepseek-v4-flash` instead of the more expensive Pro model.
 
 ## Scripts Reference
 

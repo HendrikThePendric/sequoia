@@ -1,5 +1,6 @@
 import type {
     AdapterNode,
+    FilteredResponse,
     FilterOptions,
     PagedResponse,
     StoreNode,
@@ -82,7 +83,7 @@ export class NodeStore {
         filter: string,
         page: number,
         options?: FilterOptions
-    ): Promise<PagedResponse<StoreNode>> {
+    ): Promise<FilteredResponse<StoreNode>> {
         const response = await this.#adapter.getFilteredNodes(
             filter,
             page,
@@ -91,7 +92,12 @@ export class NodeStore {
         const storeNodes = response.data.map((node) => this.#storeNode(node))
         this.#registerChildren(storeNodes)
 
-        return { pager: response.pager, data: storeNodes }
+        return {
+            pager: response.pager,
+            data: storeNodes,
+            matchedIds: response.matchedIds,
+            ancestorIds: response.ancestorIds,
+        }
     }
 
     #storeNode(adapterNode: AdapterNode): StoreNode {

@@ -1,15 +1,45 @@
 {
     "$schema": "https://opencode.ai/config.json",
+    "model": "deepseek/deepseek-v4-pro",
+    "small_model": "deepseek/deepseek-v4-flash",
     "tools": {
         "github_*": true,
         "grep_*": true,
         "context7_*": true,
-        "neovim_*": true
+        "neovim_*": true,
+        "chrome_devtools_*": true
     },
     "permission": {
         "github_*": "allow",
         "grep_*": "allow",
         "context7_*": "allow",
-        "neovim_*": "allow"
+        "neovim_*": "allow",
+        "chrome_devtools_*": "allow"
+    },
+    "agent": {
+        "explore": {
+            "description": "Read-only codebase exploration and context gathering",
+            "model": "deepseek/deepseek-v4-flash",
+            "permission": {
+                "write": "deny",
+                "edit": "deny",
+                "bash": "deny"
+            }
+        },
+        "general": {
+            "model": "deepseek/deepseek-v4-flash",
+            "steps": 15
+        },
+        "reviewer": {
+            "description": "Code review and analysis — read files and suggest improvements without making changes",
+            "mode": "subagent",
+            "model": "deepseek/deepseek-v4-flash",
+            "permission": {
+                "write": "deny",
+                "edit": "deny",
+                "bash": "deny"
+            },
+            "prompt": "You are a code reviewer. Read and analyze code changes, identify bugs, suggest improvements, and check for consistency with project conventions. Do NOT make any edits — only report findings."
+        }
     }
 }

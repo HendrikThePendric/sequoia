@@ -34,6 +34,13 @@ export type FilterOptions = {
     includeAncestors?: boolean
 }
 
+export type FilteredResponse<T> = {
+    pager: Pager
+    data: T[]
+    matchedIds: string[]
+    ancestorIds: string[]
+}
+
 export interface TreeAdapter {
     getNodesByIds(ids: string[]): Promise<AdapterNode[]>
     getNodeChildren(
@@ -49,5 +56,5 @@ export interface TreeAdapter {
         filter: string,
         page: number,
         options?: FilterOptions
-    ): Promise<PagedResponse<AdapterNode>>
+    ): Promise<FilteredResponse<AdapterNode>>
 }

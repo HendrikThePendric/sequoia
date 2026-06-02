@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AsyncMockTreeApi } from '../../tools/mock-tree-api/async-mock-tree-api'
 import type { Tree as TreeData } from '../../tools/tree-generator/generators/generate-tree'
-import treeData from '../__fixtures__/deep-tree.json'
+import treeData from '../__fixtures__/tall-tree.json'
 import { useNode } from '../node'
 import type {
     TreeAdapter,

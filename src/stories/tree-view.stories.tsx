@@ -383,6 +383,8 @@ function SearchableTreeRow({
                         height: '100%',
                         margin: '2px 12px',
                         background: '#f0f0f0',
+                        boxSizing: 'border-box',
+                        borderBottom: '1px solid grey',
                         borderRadius: 3,
                     }}
                 />

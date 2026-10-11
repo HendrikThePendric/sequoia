@@ -3,10 +3,10 @@ import { type ReactNode } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { NodeStore } from './node-store'
 import { NodeStoreProvider } from './node-store-provider'
-import type { TreeAdapter } from './types'
+import type { DataAdapter } from './types'
 import { useNodeStore } from './use-node-store'
 
-function createMockAdapter(): TreeAdapter {
+function createMockAdapter(): DataAdapter {
     return {
         getNodesByIds: vi.fn().mockResolvedValue([]),
         getNodeChildren: vi.fn().mockResolvedValue({

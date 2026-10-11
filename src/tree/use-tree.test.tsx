@@ -1,8 +1,8 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { NodeStore, NodeStoreProvider } from '../node-store'
-import type { AdapterNode, PagedResponse, TreeAdapter } from '../node-store'
+import type { AdapterNode, PagedResponse, DataAdapter } from '../node-store'
 import { TreeProvider } from './tree-provider'
 import { useTree } from './use-tree'
 
@@ -35,7 +35,7 @@ function pagedResponse(
     }
 }
 
-function createMockAdapter(overrides: Partial<TreeAdapter> = {}): TreeAdapter {
+function createMockAdapter(overrides: Partial<DataAdapter> = {}): DataAdapter {
     return {
         getNodesByIds: vi.fn().mockResolvedValue([]),
         getNodeChildren: vi.fn().mockResolvedValue(pagedResponse([])),
@@ -45,7 +45,7 @@ function createMockAdapter(overrides: Partial<TreeAdapter> = {}): TreeAdapter {
     }
 }
 
-function createWrapper(adapter: TreeAdapter, rootIds: string[]) {
+function createWrapper(adapter: DataAdapter, rootIds: string[]) {
     return function Wrapper({ children }: { children: ReactNode }) {
         return (
             <NodeStoreProvider adapter={adapter}>
@@ -79,7 +79,9 @@ describe('useTree', () => {
         const wrapper = createWrapper(adapter, ['r1', 'r2'])
         const { result } = renderHook(() => useTree(), { wrapper })
 
-        expect(result.current.getFlatIds()).toEqual(['r1', 'r2'])
+        await waitFor(() => {
+            expect(result.current.flatIds).toEqual(['r1', 'r2'])
+        })
     })
 
     it('re-renders when tree state changes', async () => {
@@ -105,13 +107,13 @@ describe('useTree', () => {
 
         // The hook's NodeStore is a different instance (created by provider),
         // so we test the subscription mechanism by calling open on the tree
-        const tree = result.current
+        const { tree } = result.current
 
         act(() => {
             tree.open('root')
         })
 
         // After open, the tree should have re-rendered
-        expect(result.current.isOpen('root')).toBe(true)
+        expect(result.current.tree.isOpen('root')).toBe(true)
     })
 })

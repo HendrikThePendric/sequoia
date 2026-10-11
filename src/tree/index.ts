@@ -1,4 +1,5 @@
 export { Tree } from './tree'
-export type { SkeletonId } from './tree'
-export { TreeProvider } from './tree-provider'
+export type { SkeletonId, TreeSurface } from './tree'
+export { TreeProvider, TreeContext } from './tree-provider'
 export { useTree } from './use-tree'
+export type { UseTreeOptions, UseTreeReturn } from './use-tree'

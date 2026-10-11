@@ -4,14 +4,14 @@ import type {
     FilterOptions,
     PagedResponse,
     StoreNode,
-    TreeAdapter,
+    DataAdapter,
 } from './types'
 
 export class NodeStore {
     #nodes: Map<string, StoreNode>
-    #adapter: TreeAdapter
+    #adapter: DataAdapter
 
-    constructor(adapter: TreeAdapter) {
+    constructor(adapter: DataAdapter) {
         this.#nodes = new Map()
         this.#adapter = adapter
     }
@@ -109,6 +109,7 @@ export class NodeStore {
             existing.path = adapterNode.path
             existing.parent = adapterNode.parent
             existing.childrenCount = adapterNode.childrenCount
+            existing.data = adapterNode.data
             return existing
         }
 

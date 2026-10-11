@@ -42,32 +42,32 @@ describe('AsyncMockTreeApi', () => {
             // root "1" has 2 children, page size 3 => 1 page
             const page1 = await tree.getNodeChildren('1', 1)
             expect(page1).toMatchInlineSnapshot(`
-                {
-                  "pager": {
-                    "page": 1,
-                    "pageSize": 3,
-                    "pages": 1,
-                    "total": 2,
+              {
+                "pager": {
+                  "page": 1,
+                  "pageSize": 3,
+                  "pages": 1,
+                  "total": 2,
+                },
+                "results": [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1-1",
+                    "id": "2",
+                    "level": 2,
+                    "parent": "1",
+                    "path": "/1/2",
                   },
-                  "results": [
-                    {
-                      "childrenCount": 2,
-                      "displayName": "1-1",
-                      "id": "2",
-                      "level": 2,
-                      "parent": "1",
-                      "path": "/1/2",
-                    },
-                    {
-                      "childrenCount": 2,
-                      "displayName": "1-2",
-                      "id": "5",
-                      "level": 2,
-                      "parent": "1",
-                      "path": "/1/5",
-                    },
-                  ],
-                }
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1-2",
+                    "id": "5",
+                    "level": 2,
+                    "parent": "1",
+                    "path": "/1/5",
+                  },
+                ],
+              }
             `)
         })
 
@@ -92,60 +92,60 @@ describe('AsyncMockTreeApi', () => {
                 }
             `)
             expect(page1.results).toMatchInlineSnapshot(`
-                [
-                  {
-                    "childrenCount": 2,
-                    "displayName": "1-1",
-                    "id": "2",
-                    "level": 2,
-                    "parent": "1",
-                    "path": "/1/2",
-                  },
-                  {
-                    "childrenCount": 0,
-                    "displayName": "1-1-1",
-                    "id": "3",
-                    "level": 3,
-                    "parent": "2",
-                    "path": "/1/2/3",
-                  },
-                  {
-                    "childrenCount": 0,
-                    "displayName": "1-1-2",
-                    "id": "4",
-                    "level": 3,
-                    "parent": "2",
-                    "path": "/1/2/4",
-                  },
-                ]
+              [
+                {
+                  "childrenCount": 2,
+                  "displayName": "1-1",
+                  "id": "2",
+                  "level": 2,
+                  "parent": "1",
+                  "path": "/1/2",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "1-1-1",
+                  "id": "3",
+                  "level": 3,
+                  "parent": "2",
+                  "path": "/1/2/3",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "1-1-2",
+                  "id": "4",
+                  "level": 3,
+                  "parent": "2",
+                  "path": "/1/2/4",
+                },
+              ]
             `)
             expect(page2.results).toMatchInlineSnapshot(`
-                [
-                  {
-                    "childrenCount": 2,
-                    "displayName": "1-2",
-                    "id": "5",
-                    "level": 2,
-                    "parent": "1",
-                    "path": "/1/5",
-                  },
-                  {
-                    "childrenCount": 0,
-                    "displayName": "1-2-1",
-                    "id": "6",
-                    "level": 3,
-                    "parent": "5",
-                    "path": "/1/5/6",
-                  },
-                  {
-                    "childrenCount": 0,
-                    "displayName": "1-2-2",
-                    "id": "7",
-                    "level": 3,
-                    "parent": "5",
-                    "path": "/1/5/7",
-                  },
-                ]
+              [
+                {
+                  "childrenCount": 2,
+                  "displayName": "1-2",
+                  "id": "5",
+                  "level": 2,
+                  "parent": "1",
+                  "path": "/1/5",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "1-2-1",
+                  "id": "6",
+                  "level": 3,
+                  "parent": "5",
+                  "path": "/1/5/6",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "1-2-2",
+                  "id": "7",
+                  "level": 3,
+                  "parent": "5",
+                  "path": "/1/5/7",
+                },
+              ]
             `)
         })
 
@@ -156,32 +156,32 @@ describe('AsyncMockTreeApi', () => {
                 { includeAncestors: true }
             )
             expect(page1.results).toMatchInlineSnapshot(`
-                [
-                  {
-                    "childrenCount": 2,
-                    "displayName": "2",
-                    "id": "8",
-                    "level": 1,
-                    "parent": null,
-                    "path": "/8",
-                  },
-                  {
-                    "childrenCount": 2,
-                    "displayName": "2-2",
-                    "id": "12",
-                    "level": 2,
-                    "parent": "8",
-                    "path": "/8/12",
-                  },
-                  {
-                    "childrenCount": 0,
-                    "displayName": "2-2-1",
-                    "id": "13",
-                    "level": 3,
-                    "parent": "12",
-                    "path": "/8/12/13",
-                  },
-                ]
+              [
+                {
+                  "childrenCount": 2,
+                  "displayName": "2",
+                  "id": "8",
+                  "level": 1,
+                  "parent": null,
+                  "path": "/8",
+                },
+                {
+                  "childrenCount": 2,
+                  "displayName": "2-2",
+                  "id": "12",
+                  "level": 2,
+                  "parent": "8",
+                  "path": "/8/12",
+                },
+                {
+                  "childrenCount": 0,
+                  "displayName": "2-2-1",
+                  "id": "13",
+                  "level": 3,
+                  "parent": "12",
+                  "path": "/8/12/13",
+                },
+              ]
             `)
         })
 
@@ -194,6 +194,21 @@ describe('AsyncMockTreeApi', () => {
         it('does not apply paging to getNodeById', async () => {
             const result = await tree.getNodeById('1')
             expect(result).toMatchInlineSnapshot(`
+              {
+                "childrenCount": 2,
+                "displayName": "1",
+                "id": "1",
+                "level": 1,
+                "parent": null,
+                "path": "/1",
+              }
+            `)
+        })
+
+        it('does not apply paging to getNodesByIds', async () => {
+            const result = await tree.getNodesByIds(['1', '8'])
+            expect(result).toMatchInlineSnapshot(`
+              [
                 {
                   "childrenCount": 2,
                   "displayName": "1",
@@ -201,31 +216,16 @@ describe('AsyncMockTreeApi', () => {
                   "level": 1,
                   "parent": null,
                   "path": "/1",
-                }
-            `)
-        })
-
-        it('does not apply paging to getNodesByIds', async () => {
-            const result = await tree.getNodesByIds(['1', '8'])
-            expect(result).toMatchInlineSnapshot(`
-                [
-                  {
-                    "childrenCount": 2,
-                    "displayName": "1",
-                    "id": "1",
-                    "level": 1,
-                    "parent": null,
-                    "path": "/1",
-                  },
-                  {
-                    "childrenCount": 2,
-                    "displayName": "2",
-                    "id": "8",
-                    "level": 1,
-                    "parent": null,
-                    "path": "/8",
-                  },
-                ]
+                },
+                {
+                  "childrenCount": 2,
+                  "displayName": "2",
+                  "id": "8",
+                  "level": 1,
+                  "parent": null,
+                  "path": "/8",
+                },
+              ]
             `)
         })
 
@@ -258,64 +258,64 @@ describe('AsyncMockTreeApi', () => {
         it('getNodeDescendants respects maxLevel', async () => {
             const result = await tree.getNodeDescendants('1', 1, 2)
             expect(result).toMatchInlineSnapshot(`
-                {
-                  "pager": {
-                    "page": 1,
-                    "pageSize": 3,
-                    "pages": 1,
-                    "total": 2,
+              {
+                "pager": {
+                  "page": 1,
+                  "pageSize": 3,
+                  "pages": 1,
+                  "total": 2,
+                },
+                "results": [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1-1",
+                    "id": "2",
+                    "level": 2,
+                    "parent": "1",
+                    "path": "/1/2",
                   },
-                  "results": [
-                    {
-                      "childrenCount": 2,
-                      "displayName": "1-1",
-                      "id": "2",
-                      "level": 2,
-                      "parent": "1",
-                      "path": "/1/2",
-                    },
-                    {
-                      "childrenCount": 2,
-                      "displayName": "1-2",
-                      "id": "5",
-                      "level": 2,
-                      "parent": "1",
-                      "path": "/1/5",
-                    },
-                  ],
-                }
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1-2",
+                    "id": "5",
+                    "level": 2,
+                    "parent": "1",
+                    "path": "/1/5",
+                  },
+                ],
+              }
             `)
         })
 
         it('getRootNodes paginates correctly', async () => {
             const result = await tree.getRootNodes(1)
             expect(result).toMatchInlineSnapshot(`
-                {
-                  "pager": {
-                    "page": 1,
-                    "pageSize": 3,
-                    "pages": 1,
-                    "total": 2,
+              {
+                "pager": {
+                  "page": 1,
+                  "pageSize": 3,
+                  "pages": 1,
+                  "total": 2,
+                },
+                "results": [
+                  {
+                    "childrenCount": 2,
+                    "displayName": "1",
+                    "id": "1",
+                    "level": 1,
+                    "parent": null,
+                    "path": "/1",
                   },
-                  "results": [
-                    {
-                      "childrenCount": 2,
-                      "displayName": "1",
-                      "id": "1",
-                      "level": 1,
-                      "parent": null,
-                      "path": "/1",
-                    },
-                    {
-                      "childrenCount": 2,
-                      "displayName": "2",
-                      "id": "8",
-                      "level": 1,
-                      "parent": null,
-                      "path": "/8",
-                    },
-                  ],
-                }
+                  {
+                    "childrenCount": 2,
+                    "displayName": "2",
+                    "id": "8",
+                    "level": 1,
+                    "parent": null,
+                    "path": "/8",
+                  },
+                ],
+              }
             `)
         })
     })
@@ -345,32 +345,32 @@ describe('AsyncMockTreeApi (rootIds)', () => {
     it('getRootNodes with rootIds returns those nodes sorted by displayName', async () => {
         const result = await tree.getRootNodes(1, ['12', '2'])
         expect(result).toMatchInlineSnapshot(`
-            {
-              "pager": {
-                "page": 1,
-                "pageSize": 2,
-                "pages": 1,
-                "total": 2,
+          {
+            "pager": {
+              "page": 1,
+              "pageSize": 2,
+              "pages": 1,
+              "total": 2,
+            },
+            "results": [
+              {
+                "childrenCount": 2,
+                "displayName": "1-1",
+                "id": "2",
+                "level": 2,
+                "parent": "1",
+                "path": "/1/2",
               },
-              "results": [
-                {
-                  "childrenCount": 2,
-                  "displayName": "1-1",
-                  "id": "2",
-                  "level": 2,
-                  "parent": "1",
-                  "path": "/1/2",
-                },
-                {
-                  "childrenCount": 2,
-                  "displayName": "2-2",
-                  "id": "12",
-                  "level": 2,
-                  "parent": "8",
-                  "path": "/8/12",
-                },
-              ],
-            }
+              {
+                "childrenCount": 2,
+                "displayName": "2-2",
+                "id": "12",
+                "level": 2,
+                "parent": "8",
+                "path": "/8/12",
+              },
+            ],
+          }
         `)
     })
 
@@ -381,37 +381,37 @@ describe('AsyncMockTreeApi (rootIds)', () => {
             { rootIds: ['2'] }
         )
         expect(result).toMatchInlineSnapshot(`
-            {
-              "ancestorIds": [],
-              "matchedIds": [
-                "3",
-                "4",
-              ],
-              "pager": {
-                "page": 1,
-                "pageSize": 2,
-                "pages": 1,
-                "total": 2,
+          {
+            "ancestorIds": [],
+            "matchedIds": [
+              "3",
+              "4",
+            ],
+            "pager": {
+              "page": 1,
+              "pageSize": 2,
+              "pages": 1,
+              "total": 2,
+            },
+            "results": [
+              {
+                "childrenCount": 0,
+                "displayName": "1-1-1",
+                "id": "3",
+                "level": 3,
+                "parent": "2",
+                "path": "/1/2/3",
               },
-              "results": [
-                {
-                  "childrenCount": 0,
-                  "displayName": "1-1-1",
-                  "id": "3",
-                  "level": 3,
-                  "parent": "2",
-                  "path": "/1/2/3",
-                },
-                {
-                  "childrenCount": 0,
-                  "displayName": "1-1-2",
-                  "id": "4",
-                  "level": 3,
-                  "parent": "2",
-                  "path": "/1/2/4",
-                },
-              ],
-            }
+              {
+                "childrenCount": 0,
+                "displayName": "1-1-2",
+                "id": "4",
+                "level": 3,
+                "parent": "2",
+                "path": "/1/2/4",
+              },
+            ],
+          }
         `)
     })
 
@@ -422,39 +422,39 @@ describe('AsyncMockTreeApi (rootIds)', () => {
             { rootIds: ['12'], includeAncestors: true }
         )
         expect(result).toMatchInlineSnapshot(`
-            {
-              "ancestorIds": [
-                "8",
-                "12",
-              ],
-              "matchedIds": [
-                "13",
-              ],
-              "pager": {
-                "page": 1,
-                "pageSize": 2,
-                "pages": 1,
-                "total": 2,
+          {
+            "ancestorIds": [
+              "8",
+              "12",
+            ],
+            "matchedIds": [
+              "13",
+            ],
+            "pager": {
+              "page": 1,
+              "pageSize": 2,
+              "pages": 1,
+              "total": 2,
+            },
+            "results": [
+              {
+                "childrenCount": 2,
+                "displayName": "2-2",
+                "id": "12",
+                "level": 2,
+                "parent": "8",
+                "path": "/8/12",
               },
-              "results": [
-                {
-                  "childrenCount": 2,
-                  "displayName": "2-2",
-                  "id": "12",
-                  "level": 2,
-                  "parent": "8",
-                  "path": "/8/12",
-                },
-                {
-                  "childrenCount": 0,
-                  "displayName": "2-2-1",
-                  "id": "13",
-                  "level": 3,
-                  "parent": "12",
-                  "path": "/8/12/13",
-                },
-              ],
-            }
+              {
+                "childrenCount": 0,
+                "displayName": "2-2-1",
+                "id": "13",
+                "level": 3,
+                "parent": "12",
+                "path": "/8/12/13",
+              },
+            ],
+          }
         `)
     })
 })

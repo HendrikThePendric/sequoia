@@ -1,13 +1,12 @@
-import { useVirtualTree } from '../virtual-tree'
-import type { UseVirtualTreeOptions } from '../virtual-tree'
+import { useTree } from '../tree'
+import type { UseTreeOptions } from '../tree'
 import { TreeRow } from './tree-row'
 import styles from './tree-view.module.css'
 
-type TreeViewProps = UseVirtualTreeOptions
+type TreeViewProps = UseTreeOptions
 
 export function TreeView(props: TreeViewProps) {
-    const { flatIds, virtualItems, parentRef, totalSize } =
-        useVirtualTree(props)
+    const { flatIds, virtualItems, parentRef, totalSize } = useTree(props)
 
     return (
         <div ref={parentRef} className={styles.tree}>

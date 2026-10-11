@@ -8,14 +8,14 @@ describe('MockTreeApi (default: childrenCount)', () => {
 
     it('getNodeById returns the correct node with derived fields', () => {
         expect(tree.getNodeById('3')).toMatchInlineSnapshot(`
-            {
-              "childrenCount": 0,
-              "displayName": "1-1-1",
-              "id": "3",
-              "level": 3,
-              "parent": "2",
-              "path": "/1/2/3",
-            }
+          {
+            "childrenCount": 0,
+            "displayName": "1-1-1",
+            "id": "3",
+            "level": 3,
+            "parent": "2",
+            "path": "/1/2/3",
+          }
         `)
     })
 
@@ -27,133 +27,133 @@ describe('MockTreeApi (default: childrenCount)', () => {
 
     it('getNodesByIds returns nodes in depth-first tree order', () => {
         expect(tree.getNodesByIds(['8', '1', '5'])).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1",
-                "id": "1",
-                "level": 1,
-                "parent": null,
-                "path": "/1",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "1-2",
-                "id": "5",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/5",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "2",
-                "id": "8",
-                "level": 1,
-                "parent": null,
-                "path": "/8",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1",
+              "id": "1",
+              "level": 1,
+              "parent": null,
+              "path": "/1",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "1-2",
+              "id": "5",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/5",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "2",
+              "id": "8",
+              "level": 1,
+              "parent": null,
+              "path": "/8",
+            },
+          ]
         `)
     })
 
     it('getNodeChildren returns direct children in depth-first order', () => {
         expect(tree.getNodeChildren('1')).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1-1",
-                "id": "2",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/2",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "1-2",
-                "id": "5",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/5",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1-1",
+              "id": "2",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/2",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "1-2",
+              "id": "5",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/5",
+            },
+          ]
         `)
     })
 
     it('getNodeDescendants returns all descendants in depth-first order', () => {
         expect(tree.getNodeDescendants('1')).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1-1",
-                "id": "2",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/2",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "1-1-1",
-                "id": "3",
-                "level": 3,
-                "parent": "2",
-                "path": "/1/2/3",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "1-1-2",
-                "id": "4",
-                "level": 3,
-                "parent": "2",
-                "path": "/1/2/4",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "1-2",
-                "id": "5",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/5",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "1-2-1",
-                "id": "6",
-                "level": 3,
-                "parent": "5",
-                "path": "/1/5/6",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "1-2-2",
-                "id": "7",
-                "level": 3,
-                "parent": "5",
-                "path": "/1/5/7",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1-1",
+              "id": "2",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/2",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "1-1-1",
+              "id": "3",
+              "level": 3,
+              "parent": "2",
+              "path": "/1/2/3",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "1-1-2",
+              "id": "4",
+              "level": 3,
+              "parent": "2",
+              "path": "/1/2/4",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "1-2",
+              "id": "5",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/5",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "1-2-1",
+              "id": "6",
+              "level": 3,
+              "parent": "5",
+              "path": "/1/5/6",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "1-2-2",
+              "id": "7",
+              "level": 3,
+              "parent": "5",
+              "path": "/1/5/7",
+            },
+          ]
         `)
     })
 
     it('getNodeDescendants respects maxLevel', () => {
         expect(tree.getNodeDescendants('1', 2)).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1-1",
-                "id": "2",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/2",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "1-2",
-                "id": "5",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/5",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1-1",
+              "id": "2",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/2",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "1-2",
+              "id": "5",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/5",
+            },
+          ]
         `)
     })
 
@@ -205,45 +205,45 @@ describe('MockTreeApi (default: childrenCount)', () => {
                 includeAncestors: true,
             }).results
         ).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "2",
-                "id": "8",
-                "level": 1,
-                "parent": null,
-                "path": "/8",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "2-2",
-                "id": "12",
-                "level": 2,
-                "parent": "8",
-                "path": "/8/12",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "2-2-1",
-                "id": "13",
-                "level": 3,
-                "parent": "12",
-                "path": "/8/12/13",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "2",
+              "id": "8",
+              "level": 1,
+              "parent": null,
+              "path": "/8",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "2-2",
+              "id": "12",
+              "level": 2,
+              "parent": "8",
+              "path": "/8/12",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "2-2-1",
+              "id": "13",
+              "level": 3,
+              "parent": "12",
+              "path": "/8/12/13",
+            },
+          ]
         `)
     })
 
     it('getNodeById returns a root node correctly', () => {
         expect(tree.getNodeById('1')).toMatchInlineSnapshot(`
-            {
-              "childrenCount": 2,
-              "displayName": "1",
-              "id": "1",
-              "level": 1,
-              "parent": null,
-              "path": "/1",
-            }
+          {
+            "childrenCount": 2,
+            "displayName": "1",
+            "id": "1",
+            "level": 1,
+            "parent": null,
+            "path": "/1",
+          }
         `)
     })
 
@@ -272,16 +272,16 @@ describe('MockTreeApi (default: childrenCount)', () => {
                 includeAncestors: true,
             }).results
         ).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1",
-                "id": "1",
-                "level": 1,
-                "parent": null,
-                "path": "/1",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1",
+              "id": "1",
+              "level": 1,
+              "parent": null,
+              "path": "/1",
+            },
+          ]
         `)
     })
 })
@@ -291,59 +291,59 @@ describe('MockTreeApi (returnChildIds: true)', () => {
 
     it('getNodeById returns node with childrenIds instead of childrenCount', () => {
         expect(tree.getNodeById('1')).toMatchInlineSnapshot(`
-            {
-              "childrenIds": [
-                "2",
-                "5",
-              ],
-              "displayName": "1",
-              "id": "1",
-              "level": 1,
-              "parent": null,
-              "path": "/1",
-            }
+          {
+            "childrenIds": [
+              "2",
+              "5",
+            ],
+            "displayName": "1",
+            "id": "1",
+            "level": 1,
+            "parent": null,
+            "path": "/1",
+          }
         `)
     })
 
     it('leaf node has an empty childrenIds array', () => {
         expect(tree.getNodeById('3')).toMatchInlineSnapshot(`
-            {
-              "childrenIds": [],
-              "displayName": "1-1-1",
-              "id": "3",
-              "level": 3,
-              "parent": "2",
-              "path": "/1/2/3",
-            }
+          {
+            "childrenIds": [],
+            "displayName": "1-1-1",
+            "id": "3",
+            "level": 3,
+            "parent": "2",
+            "path": "/1/2/3",
+          }
         `)
     })
 
     it('getNodeChildren returns nodes with childrenIds', () => {
         expect(tree.getNodeChildren('1')).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenIds": [
-                  "3",
-                  "4",
-                ],
-                "displayName": "1-1",
-                "id": "2",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/2",
-              },
-              {
-                "childrenIds": [
-                  "6",
-                  "7",
-                ],
-                "displayName": "1-2",
-                "id": "5",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/5",
-              },
-            ]
+          [
+            {
+              "childrenIds": [
+                "3",
+                "4",
+              ],
+              "displayName": "1-1",
+              "id": "2",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/2",
+            },
+            {
+              "childrenIds": [
+                "6",
+                "7",
+              ],
+              "displayName": "1-2",
+              "id": "5",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/5",
+            },
+          ]
         `)
     })
 })
@@ -356,24 +356,24 @@ describe('MockTreeApi (rootIds)', () => {
         // "12" (displayName "2-2") and "2" (displayName "1-1")
         // passed in reverse order to verify sorting
         expect(tree.getRootNodes(['12', '2'])).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1-1",
-                "id": "2",
-                "level": 2,
-                "parent": "1",
-                "path": "/1/2",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "2-2",
-                "id": "12",
-                "level": 2,
-                "parent": "8",
-                "path": "/8/12",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1-1",
+              "id": "2",
+              "level": 2,
+              "parent": "1",
+              "path": "/1/2",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "2-2",
+              "id": "12",
+              "level": 2,
+              "parent": "8",
+              "path": "/8/12",
+            },
+          ]
         `)
     })
 
@@ -406,16 +406,16 @@ describe('MockTreeApi (rootIds)', () => {
                 rootIds: ['2'],
             }).results
         ).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 0,
-                "displayName": "1-1-1",
-                "id": "3",
-                "level": 3,
-                "parent": "2",
-                "path": "/1/2/3",
-              },
-            ]
+          [
+            {
+              "childrenCount": 0,
+              "displayName": "1-1-1",
+              "id": "3",
+              "level": 3,
+              "parent": "2",
+              "path": "/1/2/3",
+            },
+          ]
         `)
     })
 
@@ -427,24 +427,24 @@ describe('MockTreeApi (rootIds)', () => {
             { rootIds: ['12'], includeAncestors: true }
         )
         expect(result.results).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "2-2",
-                "id": "12",
-                "level": 2,
-                "parent": "8",
-                "path": "/8/12",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "2-2-1",
-                "id": "13",
-                "level": 3,
-                "parent": "12",
-                "path": "/8/12/13",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "2-2",
+              "id": "12",
+              "level": 2,
+              "parent": "8",
+              "path": "/8/12",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "2-2-1",
+              "id": "13",
+              "level": 3,
+              "parent": "12",
+              "path": "/8/12/13",
+            },
+          ]
         `)
         // Verify "8" is NOT in the results
         expect(result.results.find((n) => n.id === '8')).toBeUndefined()
@@ -456,40 +456,40 @@ describe('MockTreeApi (rootIds)', () => {
             rootIds: ['2', '12'],
         })
         expect(result.results).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 0,
-                "displayName": "1-1-1",
-                "id": "3",
-                "level": 3,
-                "parent": "2",
-                "path": "/1/2/3",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "1-1-2",
-                "id": "4",
-                "level": 3,
-                "parent": "2",
-                "path": "/1/2/4",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "2-2-1",
-                "id": "13",
-                "level": 3,
-                "parent": "12",
-                "path": "/8/12/13",
-              },
-              {
-                "childrenCount": 0,
-                "displayName": "2-2-2",
-                "id": "14",
-                "level": 3,
-                "parent": "12",
-                "path": "/8/12/14",
-              },
-            ]
+          [
+            {
+              "childrenCount": 0,
+              "displayName": "1-1-1",
+              "id": "3",
+              "level": 3,
+              "parent": "2",
+              "path": "/1/2/3",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "1-1-2",
+              "id": "4",
+              "level": 3,
+              "parent": "2",
+              "path": "/1/2/4",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "2-2-1",
+              "id": "13",
+              "level": 3,
+              "parent": "12",
+              "path": "/8/12/13",
+            },
+            {
+              "childrenCount": 0,
+              "displayName": "2-2-2",
+              "id": "14",
+              "level": 3,
+              "parent": "12",
+              "path": "/8/12/14",
+            },
+          ]
         `)
     })
 
@@ -507,24 +507,24 @@ describe('MockTreeApi (getRootNodes without rootIds)', () => {
 
     it('returns all original roots', () => {
         expect(tree.getRootNodes()).toMatchInlineSnapshot(`
-            [
-              {
-                "childrenCount": 2,
-                "displayName": "1",
-                "id": "1",
-                "level": 1,
-                "parent": null,
-                "path": "/1",
-              },
-              {
-                "childrenCount": 2,
-                "displayName": "2",
-                "id": "8",
-                "level": 1,
-                "parent": null,
-                "path": "/8",
-              },
-            ]
+          [
+            {
+              "childrenCount": 2,
+              "displayName": "1",
+              "id": "1",
+              "level": 1,
+              "parent": null,
+              "path": "/1",
+            },
+            {
+              "childrenCount": 2,
+              "displayName": "2",
+              "id": "8",
+              "level": 1,
+              "parent": null,
+              "path": "/8",
+            },
+          ]
         `)
     })
 })

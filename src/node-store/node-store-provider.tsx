@@ -1,11 +1,11 @@
 import { createContext, useState, type ReactNode } from 'react'
 import { NodeStore } from './node-store'
-import type { TreeAdapter } from './types'
+import type { DataAdapter } from './types'
 
 export const NodeStoreContext = createContext<NodeStore | null>(null)
 
 type NodeStoreProviderProps = {
-    adapter: TreeAdapter
+    adapter: DataAdapter
     children: ReactNode
 }
 

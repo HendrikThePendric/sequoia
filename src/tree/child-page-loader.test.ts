@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { NodeStore } from '../node-store'
-import type { AdapterNode, PagedResponse, TreeAdapter } from '../node-store'
-import { TreeFetcher } from './tree-fetcher'
+import type { AdapterNode, PagedResponse, DataAdapter } from '../node-store'
+import { ChildPageLoader } from './child-page-loader'
 
 // -- Helpers --
 
@@ -29,7 +29,7 @@ function pagedResponse(
     }
 }
 
-function createMockAdapter(overrides: Partial<TreeAdapter> = {}): TreeAdapter {
+function createMockAdapter(overrides: Partial<DataAdapter> = {}): DataAdapter {
     return {
         getNodesByIds: vi.fn().mockResolvedValue([]),
         getNodeChildren: vi.fn().mockRejectedValue(new Error('unexpected')),
@@ -52,7 +52,7 @@ function deferred<T>(): Deferred<T> {
     return { promise, resolve }
 }
 
-describe('TreeFetcher', () => {
+describe('ChildPageLoader', () => {
     describe('loadChildren', () => {
         it('fires pages in parallel for the given offset range', async () => {
             const getNodeChildren = vi
@@ -69,7 +69,7 @@ describe('TreeFetcher', () => {
             const store = new NodeStore(adapter)
             await store.fetchNodesByIds(['root'])
 
-            const fetcher = new TreeFetcher(store, 50)
+            const fetcher = new ChildPageLoader(store, 50)
 
             fetcher.loadChildren('root', 149)
 
@@ -113,9 +113,9 @@ describe('TreeFetcher', () => {
             const store = new NodeStore(adapter)
             await store.fetchNodesByIds(['root'])
 
-            const fetcher = new TreeFetcher(store, 2)
+            const fetcher = new ChildPageLoader(store, 2)
             const listener = vi.fn()
-            fetcher.onBatchComplete(listener)
+            fetcher.onFlush(listener)
 
             fetcher.loadChildren('root', 5)
 
@@ -224,9 +224,9 @@ describe('TreeFetcher', () => {
             const store = new NodeStore(adapter)
             await store.fetchNodesByIds(['root'])
 
-            const fetcher = new TreeFetcher(store, 2)
+            const fetcher = new ChildPageLoader(store, 2)
             const listener = vi.fn()
-            fetcher.onBatchComplete(listener)
+            fetcher.onFlush(listener)
 
             // First call: maxOffset=1 → page 1 only
             fetcher.loadChildren('root', 1)
@@ -310,7 +310,7 @@ describe('TreeFetcher', () => {
             const store = new NodeStore(adapter)
             await store.fetchNodesByIds(['root'])
 
-            const fetcher = new TreeFetcher(store, 2)
+            const fetcher = new ChildPageLoader(store, 2)
 
             // Both calls request page 1
             fetcher.loadChildren('root', 0)
@@ -366,9 +366,9 @@ describe('TreeFetcher', () => {
             const store = new NodeStore(adapter)
             await store.fetchNodesByIds(['root', 'a', 'b'])
 
-            const fetcher = new TreeFetcher(store, 2)
+            const fetcher = new ChildPageLoader(store, 2)
             const listener = vi.fn()
-            fetcher.onBatchComplete(listener)
+            fetcher.onFlush(listener)
 
             fetcher.loadChildren('root', 99)
 
@@ -376,20 +376,20 @@ describe('TreeFetcher', () => {
             expect(listener).not.toHaveBeenCalled()
         })
 
-        it('no-ops when parent node is not in the store', () => {
+        it('throws when parent node is not in the store', () => {
             const getNodeChildren = vi.fn()
             const adapter = createMockAdapter({ getNodeChildren })
             const store = new NodeStore(adapter)
 
-            const fetcher = new TreeFetcher(store, 50)
+            const fetcher = new ChildPageLoader(store, 50)
 
-            fetcher.loadChildren('nonexistent', 99)
-
-            expect(getNodeChildren).not.toHaveBeenCalled()
+            expect(() => fetcher.loadChildren('nonexistent', 99)).toThrow(
+                'not found in NodeStore'
+            )
         })
     })
 
-    describe('onBatchComplete', () => {
+    describe('onFlush', () => {
         it('calls listener when batch completes and unsubscribe works', async () => {
             const adapter = createMockAdapter({
                 getNodesByIds: vi
@@ -404,9 +404,9 @@ describe('TreeFetcher', () => {
             const store = new NodeStore(adapter)
             await store.fetchNodesByIds(['root'])
 
-            const fetcher = new TreeFetcher(store, 50)
+            const fetcher = new ChildPageLoader(store, 50)
             const listener = vi.fn()
-            const unsub = fetcher.onBatchComplete(listener)
+            const unsub = fetcher.onFlush(listener)
 
             fetcher.loadChildren('root', 99)
 

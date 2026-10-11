@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { NodeStore } from './node-store'
-import type { AdapterNode, PagedResponse, TreeAdapter } from './types'
+import type { AdapterNode, PagedResponse, DataAdapter } from './types'
 
 function createAdapterNode(
     overrides: Partial<AdapterNode> & { id: string }
@@ -31,7 +31,7 @@ function pagedResponse(
     }
 }
 
-function createMockAdapter(overrides: Partial<TreeAdapter> = {}): TreeAdapter {
+function createMockAdapter(overrides: Partial<DataAdapter> = {}): DataAdapter {
     return {
         getNodesByIds: vi.fn().mockResolvedValue([]),
         getNodeChildren: vi.fn().mockResolvedValue(pagedResponse([])),

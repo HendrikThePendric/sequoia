@@ -1,5 +1,5 @@
-import type { NodeStore } from '../node-store'
-import { TreeFetcher } from './tree-fetcher'
+import type { NodeStore, StoreNode } from '../node-store'
+import { ChildPageLoader } from './child-page-loader'
 
 type Listener = () => void
 
@@ -10,7 +10,55 @@ export type SkeletonId = {
     offset: number
 }
 
-export class Tree {
+export interface TreeSurface {
+    // -- Subscription --
+    subscribe(listener: Listener): () => void
+    getSnapshot(): number
+
+    // -- Expansion --
+    open(id: string): void
+    close(id: string): void
+    toggle(id: string): void
+    isOpen(id: string): boolean
+
+    // -- Loading --
+    /** Ensure children up to maxOffset are visible for the given parent. */
+    loadChildren(parentId: string, maxOffset: number): void
+    /**
+     * Map a visible index range to skeleton rows and trigger loadChildren
+     * for the furthest visible offset per parent.
+     */
+    loadVisibleRange(firstIndex: number, lastIndex: number): void
+
+    // -- Derived state --
+    getFlatIds(): string[]
+    getIndexById(id: string): number | undefined
+    /** Total row count for the virtualizer. */
+    getTotalCount(): number
+
+    // -- Search mode (lifecycle managed by useTreeSearch) --
+    setSearchResults(
+        matchedIds: string[],
+        ancestorIds: string[],
+        total: number
+    ): void
+    clearSearch(): void
+    inSearchMode(): boolean
+
+    // -- Search mode query helpers (for consumer row styling) --
+    isFilterMatch(id: string): boolean
+    isFilterAncestor(id: string): boolean
+    getTotalResultCount(): number
+
+    // -- Node access --
+    getNode(id: string): StoreNode | undefined
+    isLeaf(id: string): boolean
+    hasAllChildren(id: string): boolean
+
+    // -- Skeleton helpers (static, used by virtualizer integration) --
+}
+
+export class Tree implements TreeSurface {
     #nodeStore: NodeStore
     #rootIds: string[]
     #openNodeIds: Set<string>
@@ -18,18 +66,14 @@ export class Tree {
     #indexById: Map<string, number>
     #listeners: Set<Listener>
     #version: number
-    #fetcher: TreeFetcher
+    #pageLoader: ChildPageLoader
 
     // -- Search mode state --
     #filterMatchedIds: Set<string> | null = null
     #filterAncestorIds: Set<string> | null = null
     #searchOpenIds: Set<string> = new Set()
     #totalResultCount: number = 0
-    // Temporary cache used during filtered walk to avoid extra params on walkNode
     #filterSetCache: Set<string> | null = null
-    // Parents whose children have been flushed by TreeFetcher in the
-    // current search session. After flush, childrenIds is rebuilt from
-    // API pages, so filter-set children are safe to walk when expanded.
     #flushedParents: Set<string> = new Set()
 
     constructor(nodeStore: NodeStore, rootIds: string[]) {
@@ -40,9 +84,9 @@ export class Tree {
         this.#indexById = new Map()
         this.#listeners = new Set()
         this.#version = 0
-        this.#fetcher = new TreeFetcher(nodeStore)
+        this.#pageLoader = new ChildPageLoader(nodeStore)
 
-        this.#fetcher.onBatchComplete((parentId) => {
+        this.#pageLoader.onFlush((parentId) => {
             this.#flushedParents.add(parentId)
             this.#rebuildFlatIds()
             this.#notify()
@@ -51,7 +95,7 @@ export class Tree {
         this.#rebuildFlatIds()
     }
 
-    // -- Skeleton ID helpers --
+    // -- Static helpers (used in useTree's skeleton trigger) --
 
     static isSkeleton(id: string): boolean {
         return id.startsWith(SKELETON_PREFIX)
@@ -91,7 +135,7 @@ export class Tree {
 
     open(id: string): void {
         if (this.#inSearchMode()) {
-            this.openSearch(id)
+            this.#openSearch(id)
             return
         }
         if (this.#openNodeIds.has(id)) {
@@ -104,7 +148,7 @@ export class Tree {
 
     close(id: string): void {
         if (this.#inSearchMode()) {
-            this.closeSearch(id)
+            this.#closeSearch(id)
             return
         }
         if (!this.#openNodeIds.has(id)) {
@@ -117,45 +161,62 @@ export class Tree {
 
     toggle(id: string): void {
         if (this.#inSearchMode()) {
-            this.toggleSearch(id)
+            this.#toggleSearch(id)
             return
         }
         if (this.#openNodeIds.has(id)) {
             this.close(id)
         } else {
             this.open(id)
-            // Eager-load page 1 so the first children appear as fast as possible
             this.loadChildren(id, 0)
         }
     }
 
     isOpen(id: string): boolean {
+        if (this.#inSearchMode()) {
+            return this.#isSearchOpen(id)
+        }
         return this.#openNodeIds.has(id)
     }
 
-    /**
-     * Ensure children up to maxOffset are visible.
-     * Called by the scroll effect to load children in the visible range.
-     * No-op if the node is not open (checks the mode-appropriate open set).
-     */
+    // -- Loading --
+
     loadChildren(parentId: string, maxOffset: number): void {
-        const isOpen = this.#inSearchMode()
-            ? this.#searchOpenIds.has(parentId)
-            : this.#openNodeIds.has(parentId)
-        if (!isOpen) {
+        const openSet = this.#inSearchMode()
+            ? this.#searchOpenIds
+            : this.#openNodeIds
+        if (!openSet.has(parentId)) {
             return
         }
-        this.#fetcher.loadChildren(parentId, maxOffset)
+        this.#pageLoader.loadChildren(parentId, maxOffset)
     }
 
-    // -- Search mode --
+    loadVisibleRange(firstIndex: number, lastIndex: number): void {
+        const currentFlatIds = this.#flatIds
+        const parentMaxOffsets = new Map<string, number>()
 
-    /**
-     * Enter search mode. Called incrementally as pages of results arrive.
-     * @param matchedIds - IDs of nodes that matched the filter query
-     * @param ancestorIds - IDs of ancestor nodes that should be shown for context
-     * @param total - total combined result count across all pages (from pager)
-     */
+        for (let i = firstIndex; i <= lastIndex; i++) {
+            const id = currentFlatIds[i]
+            if (!id || !Tree.isSkeleton(id)) {
+                continue
+            }
+            const skeleton = Tree.parseSkeletonId(id)
+            if (!skeleton) {
+                continue
+            }
+            const prev = parentMaxOffsets.get(skeleton.parentId) ?? -1
+            if (skeleton.offset > prev) {
+                parentMaxOffsets.set(skeleton.parentId, skeleton.offset)
+            }
+        }
+
+        for (const [parentId, maxOffset] of parentMaxOffsets) {
+            this.loadChildren(parentId, maxOffset)
+        }
+    }
+
+    // -- Search mode (public API for useTreeSearch) --
+
     setSearchResults(
         matchedIds: string[],
         ancestorIds: string[],
@@ -181,7 +242,6 @@ export class Tree {
         this.#notify()
     }
 
-    /** Exit search mode and return to the normal tree view. */
     clearSearch(): void {
         this.#filterMatchedIds = null
         this.#filterAncestorIds = null
@@ -196,37 +256,6 @@ export class Tree {
         return this.#inSearchMode()
     }
 
-    openSearch(id: string): void {
-        if (this.#searchOpenIds.has(id)) {
-            return
-        }
-        this.#searchOpenIds.add(id)
-        this.#rebuildFlatIds()
-        this.#notify()
-    }
-
-    closeSearch(id: string): void {
-        if (!this.#searchOpenIds.has(id)) {
-            return
-        }
-        this.#searchOpenIds.delete(id)
-        this.#rebuildFlatIds()
-        this.#notify()
-    }
-
-    toggleSearch(id: string): void {
-        if (this.#searchOpenIds.has(id)) {
-            this.closeSearch(id)
-        } else {
-            this.openSearch(id)
-            this.loadChildren(id, 0)
-        }
-    }
-
-    isSearchOpen(id: string): boolean {
-        return this.#searchOpenIds.has(id)
-    }
-
     isFilterMatch(id: string): boolean {
         return this.#filterMatchedIds?.has(id) ?? false
     }
@@ -239,23 +268,7 @@ export class Tree {
         return this.#totalResultCount
     }
 
-    /**
-     * Total row count for virtualizer.
-     * In search mode, uses the pager total so the scrollbar is correctly
-     * sized even before all pages are loaded.
-     */
-    getTotalCount(): number {
-        if (this.#inSearchMode()) {
-            return Math.max(this.#flatIds.length, this.#totalResultCount)
-        }
-        return this.#flatIds.length
-    }
-
-    #inSearchMode(): boolean {
-        return this.#filterMatchedIds !== null
-    }
-
-    // -- Derived state (read during render) --
+    // -- Derived state --
 
     getFlatIds(): string[] {
         return this.#flatIds
@@ -263,6 +276,67 @@ export class Tree {
 
     getIndexById(id: string): number | undefined {
         return this.#indexById.get(id)
+    }
+
+    getTotalCount(): number {
+        if (this.#inSearchMode()) {
+            return Math.max(this.#flatIds.length, this.#totalResultCount)
+        }
+        return this.#flatIds.length
+    }
+
+    getNode(id: string): StoreNode | undefined {
+        return this.#nodeStore.getNode(id)
+    }
+
+    isLeaf(id: string): boolean {
+        const node = this.#nodeStore.getNode(id)
+        return node ? node.childrenCount === 0 : true
+    }
+
+    hasAllChildren(id: string): boolean {
+        const node = this.#nodeStore.getNode(id)
+        if (!node) {
+            return false
+        }
+        return node.childrenIds.size >= node.childrenCount
+    }
+
+    // -- Private search mode helpers --
+
+    #inSearchMode(): boolean {
+        return this.#filterMatchedIds !== null
+    }
+
+    #openSearch(id: string): void {
+        if (this.#searchOpenIds.has(id)) {
+            return
+        }
+        this.#searchOpenIds.add(id)
+        this.#rebuildFlatIds()
+        this.#notify()
+    }
+
+    #closeSearch(id: string): void {
+        if (!this.#searchOpenIds.has(id)) {
+            return
+        }
+        this.#searchOpenIds.delete(id)
+        this.#rebuildFlatIds()
+        this.#notify()
+    }
+
+    #toggleSearch(id: string): void {
+        if (this.#searchOpenIds.has(id)) {
+            this.#closeSearch(id)
+        } else {
+            this.#openSearch(id)
+            this.loadChildren(id, 0)
+        }
+    }
+
+    #isSearchOpen(id: string): boolean {
+        return this.#searchOpenIds.has(id)
     }
 
     // -- Internal --
@@ -295,9 +369,6 @@ export class Tree {
             ...this.#filterAncestorIds!,
         ])
 
-        // Only start walking from roots that are in the filter set.
-        // Walk only includes children that are in the filter set
-        // (plus their loaded descendants when expanded).
         for (const rootId of this.#rootIds) {
             if (this.#filterSetCache.has(rootId)) {
                 this.#walkNode(rootId, flatIds, indexById)
@@ -331,25 +402,18 @@ export class Tree {
         for (const childId of node.childrenIds) {
             const inFilterSet = filterSet && filterSet.has(childId)
             if (inFilterSet && !isExpanded) {
-                // Search mode, collapsed: filter-set children always visible.
                 this.#walkNode(childId, flatIds, indexById)
             } else if (isExpanded && !inFilterSet) {
-                // Expanded: walk non-filter-set children. After flush,
-                // filter-set children from API pages are also in childrenIds
-                // but are no longer in the filter set (they were seeded).
                 this.#walkNode(childId, flatIds, indexById)
             } else if (
                 isExpanded &&
                 inFilterSet &&
                 this.#flushedParents.has(id)
             ) {
-                // Expanded + flushed: filter-set children are from API pages,
-                // safe to walk at their natural position.
                 this.#walkNode(childId, flatIds, indexById)
             }
         }
 
-        // Emit skeleton entries when the node is expanded
         const loadedCount = node.childrenIds.size
         const totalCount = node.childrenCount
         if (loadedCount < totalCount && isExpanded) {

@@ -5,6 +5,8 @@ export type AdapterNode = {
     path: string
     parent: string | null
     childrenCount: number
+    /** Consumer-specific payload attached by the adapter. */
+    data?: Record<string, unknown>
 }
 
 export type StoreNode = {
@@ -15,6 +17,8 @@ export type StoreNode = {
     parent: string | null
     childrenCount: number
     childrenIds: Set<string>
+    /** Consumer-specific payload attached by the adapter. */
+    data?: Record<string, unknown>
 }
 
 export type Pager = {
@@ -41,7 +45,7 @@ export type FilteredResponse<T> = {
     ancestorIds: string[]
 }
 
-export interface TreeAdapter {
+export interface DataAdapter {
     getNodesByIds(ids: string[]): Promise<AdapterNode[]>
     getNodeChildren(
         id: string,

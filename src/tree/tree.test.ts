@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { NodeStore } from '../node-store'
-import type { AdapterNode, PagedResponse, TreeAdapter } from '../node-store'
+import type { AdapterNode, PagedResponse, DataAdapter } from '../node-store'
 import { Tree } from './tree'
 
 // -- Test helpers (same pattern as node-store tests) --
@@ -34,7 +34,7 @@ function pagedResponse(
     }
 }
 
-function createMockAdapter(overrides: Partial<TreeAdapter> = {}): TreeAdapter {
+function createMockAdapter(overrides: Partial<DataAdapter> = {}): DataAdapter {
     return {
         getNodesByIds: vi.fn().mockResolvedValue([]),
         getNodeChildren: vi.fn().mockResolvedValue(pagedResponse([])),
@@ -667,11 +667,12 @@ describe('Tree', () => {
 
             // Expand root. Pre-flush: 'a' (filter-set) is skipped, only
             // non-filter-set sibling 'b' is shown.
-            tree.openSearch('root')
+            // In search mode, open/close dispatch to the search open set.
+            tree.open('root')
             expect(tree.getFlatIds()).toEqual(['root', 'b'])
 
             // Collapse root → 'b' hidden, but filter-set child 'a' returns
-            tree.closeSearch('root')
+            tree.close('root')
             expect(tree.getFlatIds()).toEqual(['root', 'a'])
         })
 
@@ -699,7 +700,8 @@ describe('Tree', () => {
             expect(tree.getFlatIds()).toEqual(['root', 'a', 'a1'])
 
             // Closing 'a' doesn't hide filter-set children (a1)
-            tree.closeSearch('a')
+            // In search mode, close dispatches to the search close set.
+            tree.close('a')
             expect(tree.getFlatIds()).toEqual(['root', 'a', 'a1'])
         })
 
@@ -728,11 +730,12 @@ describe('Tree', () => {
             // Expand root. Pre-flush: filter-set child 'a' is skipped,
             // only non-filter-set sibling 'b' is shown. 'a' reappears
             // at its natural position when its API page loads (flush).
-            tree.openSearch('root')
+            // open dispatches to search open set in search mode.
+            tree.open('root')
             expect(tree.getFlatIds()).toEqual(['root', 'b'])
         })
 
-        it('toggle redirects to toggleSearch in search mode', async () => {
+        it('toggle dispatches to search open set in search mode', async () => {
             const store = await createPopulatedStore([
                 createAdapterNode({ id: 'root', childrenCount: 1 }),
                 createAdapterNode({
@@ -745,17 +748,15 @@ describe('Tree', () => {
             const tree = new Tree(store, ['root'])
             tree.setSearchResults(['a'], ['root'], 2)
 
-            // Manually expand root in search mode
-            tree.openSearch('root')
-            expect(tree.isSearchOpen('root')).toBe(true)
-
-            // toggle → closes root in search mode
-            tree.toggle('root')
-            expect(tree.isSearchOpen('root')).toBe(false)
-            expect(tree.isOpen('root')).toBe(false) // normal open set untouched
+            // In search mode, open/toggle/close/isOpen dispatch to search open set
+            tree.open('root')
+            expect(tree.isOpen('root')).toBe(true)
 
             tree.toggle('root')
-            expect(tree.isSearchOpen('root')).toBe(true)
+            expect(tree.isOpen('root')).toBe(false)
+
+            tree.toggle('root')
+            expect(tree.isOpen('root')).toBe(true)
         })
 
         it('clearSearch exits search mode and restores normal walk', async () => {
@@ -873,7 +874,7 @@ describe('Tree', () => {
 
             // Expand root. Pre-flush: filter-set children (a, b) are
             // skipped. loadedCount=2, totalCount=5 → 3 skeletons.
-            tree.openSearch('root')
+            tree.open('root')
 
             const flatIds = tree.getFlatIds()
             expect(flatIds).toHaveLength(4) // root + 3 skeletons
@@ -962,7 +963,7 @@ describe('Tree', () => {
 
             // Expand root in search mode — childrenIds becomes only {c, d}
             // after flush, so 'a' (match on later page) is no longer visible
-            tree.openSearch('root')
+            tree.open('root')
             tree.loadChildren('root', 1)
 
             await vi.waitFor(() => {
@@ -1015,7 +1016,7 @@ describe('Tree', () => {
             expect(tree.getFlatIds()).toEqual(['root', 'match'])
 
             // Expand root — flush clears and rebuilds from page 1 only
-            tree.openSearch('root')
+            tree.open('root')
             tree.loadChildren('root', 0)
 
             await vi.waitFor(() => {
@@ -1066,7 +1067,7 @@ describe('Tree', () => {
 
             const tree = new Tree(store, ['root'])
             tree.setSearchResults(['match'], ['root'], 3)
-            tree.openSearch('root')
+            tree.open('root')
             tree.loadChildren('root', 0)
 
             // After page 1, match is not visible (not on page 1)
@@ -1135,7 +1136,7 @@ describe('Tree', () => {
             tree.setSearchResults([], ['root'], 1)
             tree.toggle('root')
 
-            expect(tree.isSearchOpen('root')).toBe(true)
+            expect(tree.isOpen('root')).toBe(true)
 
             await vi.waitFor(() => {
                 expect(adapter.getNodeChildren).toHaveBeenCalledWith('root', 1)

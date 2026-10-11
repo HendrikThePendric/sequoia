@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
-import { useNode } from '../node'
-import { Tree, useTree } from '../tree'
+import { Tree } from '../tree'
 import type { SkeletonId } from '../tree'
+import { useTree } from '../tree/use-tree'
 import styles from './tree-row.module.css'
 
 type TreeRowProps = {
@@ -11,13 +11,15 @@ type TreeRowProps = {
 
 function SkeletonRow({
     skeleton,
+    tree,
     style,
 }: {
     skeleton: SkeletonId
+    tree: Tree
     style?: CSSProperties
 }) {
-    const nodeState = useNode(skeleton.parentId)
-    const level = nodeState ? nodeState.level + 1 : 1
+    const parentNode = tree.getNode(skeleton.parentId)
+    const level = parentNode ? parentNode.level + 1 : 1
     const indent = (level - 1) * 24
 
     return (
@@ -35,14 +37,14 @@ function SkeletonRow({
 }
 
 export function TreeRow({ id, style }: TreeRowProps) {
-    const tree = useTree()
+    const { tree } = useTree()
 
     if (Tree.isSkeleton(id)) {
         const skeleton = Tree.parseSkeletonId(id)
         if (!skeleton) {
             return null
         }
-        return <SkeletonRow skeleton={skeleton} style={style} />
+        return <SkeletonRow skeleton={skeleton} tree={tree} style={style} />
     }
 
     return <RealTreeRow id={id} tree={tree} style={style} />
@@ -54,16 +56,17 @@ function RealTreeRow({
     style,
 }: {
     id: string
-    tree: ReturnType<typeof useTree>
+    tree: Tree
     style?: CSSProperties
 }) {
-    const nodeState = useNode(id)
+    const node = tree.getNode(id)
 
-    if (!nodeState) {
+    if (!node) {
         return null
     }
 
-    const { displayName, level, childrenCount, isOpen } = nodeState
+    const { displayName, level, childrenCount } = node
+    const isOpen = tree.isOpen(id)
     const isLeaf = childrenCount === 0
     const indent = (level - 1) * 24
 

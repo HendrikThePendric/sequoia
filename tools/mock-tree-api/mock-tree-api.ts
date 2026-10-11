@@ -7,6 +7,7 @@ export type WalkedNode = {
     path: string
     parent: string | null
     childrenCount: number
+    data?: Record<string, unknown>
 }
 
 export type WalkedNodeWithChildIds = Omit<WalkedNode, 'childrenCount'> & {

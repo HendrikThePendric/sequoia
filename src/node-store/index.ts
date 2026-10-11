@@ -8,5 +8,5 @@ export type {
     PagedResponse,
     Pager,
     StoreNode,
-    TreeAdapter,
+    DataAdapter,
 } from './types'
